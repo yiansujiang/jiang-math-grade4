@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>小數大探險</title>
+<style>
+  :root{
+    box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+    --bg1:#eaf6f6; --bg2:#f6efe6; --ink:#243b48; --soft:#5b6f7a; --card:#ffffff; --line:#d7e3e6;
+    --g1:#0f9e99; --g2:#7b5fd0; --g3:#e0912f; --g4:#e0658a;
+    --ok:#2f9e6f; --okbg:#e5f6ee; --warn:#e07b3a; --warnbg:#fdefe3;
+    --btn:#f2f8f8; --btnbd:#bfd7da; --focus:var(--g1); --fs:20px; --radius:22px;
+  }
+  *{box-sizing:inherit;} html,body{margin:0;padding:0;}
+  body{font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Heiti TC",system-ui,sans-serif;color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));min-height:100vh;font-size:var(--fs);line-height:1.7;-webkit-text-size-adjust:100%;letter-spacing:.3px;}
+  body.calm{background:#f4f6f6;}
+  .wrap{max-width:820px;margin:0 auto;padding:12px 16px 60px;}
+  .brand{display:flex;align-items:center;gap:10px;padding:6px 4px;}
+  .brand .dot{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 32% 30%,#8fd6d2,var(--g1));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;box-shadow:0 2px 6px rgba(15,158,153,.35);}
+  body.calm .brand .dot{background:#7fb3b0;box-shadow:none;}
+  .brand b{font-size:15px;color:var(--soft);font-weight:700;letter-spacing:1px;}
+  .ctrl{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 10px;}
+  .ctrl button{border:2px solid var(--btnbd);background:var(--btn);color:var(--ink);border-radius:16px;padding:8px 12px;font-size:15px;font-weight:700;cursor:pointer;min-height:44px;}
+  .ctrl button.on{background:var(--g1);color:#fff;border-color:var(--g1);}
+  body.calm .ctrl button.on{background:#5b8f8c;border-color:#5b8f8c;}
+  h1.title{font-size:27px;margin:6px 0 2px;text-align:center;font-weight:900;letter-spacing:2px;}
+  .subtitle{text-align:center;color:var(--soft);font-size:15px;margin:0 0 14px;}
+  .map{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:16px 14px;box-shadow:0 8px 22px rgba(60,90,100,.08);}
+  body.calm .map{box-shadow:none;}
+  .bar{height:14px;background:#e9eef0;border-radius:20px;overflow:hidden;margin:4px 0 16px;}
+  .bar > i{display:block;height:100%;width:0;border-radius:20px;background:linear-gradient(90deg,var(--g1),var(--g2));transition:width .5s ease;}
+  body.calm .bar > i{background:#6aa9a5;transition:none;}
+  .stations{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media(max-width:520px){.stations{grid-template-columns:1fr;}}
+  .st{display:flex;align-items:center;gap:12px;border:2px solid var(--line);border-radius:18px;padding:12px;background:#fbfdfd;cursor:pointer;text-align:left;transition:transform .12s;}
+  .st:not(.lock):hover{transform:translateY(-2px);} body.calm .st:hover{transform:none;}
+  .st .ic{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;flex:0 0 auto;color:#fff;}
+  .st.g1 .ic{background:var(--g1);} .st.g2 .ic{background:var(--g2);} .st.g3 .ic{background:var(--g3);} .st.g4 .ic{background:var(--g4);}
+  body.calm .st .ic{filter:saturate(.6);}
+  .st .tx{flex:1;min-width:0;} .st .tx b{display:block;font-size:18px;font-weight:800;} .st .tx small{color:var(--soft);font-size:13.5px;}
+  .st .flag{font-size:22px;flex:0 0 auto;} .st.lock{opacity:.5;cursor:not-allowed;background:#f1f3f4;}
+  .st .dots{display:flex;gap:4px;margin-top:4px;} .st .dots span{width:9px;height:9px;border-radius:50%;background:#dbe4e6;} .st .dots span.f{background:var(--ok);}
+  .scene{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:16px 16px 20px;box-shadow:0 8px 22px rgba(60,90,100,.08);}
+  body.calm .scene{box-shadow:none;}
+  .sceneTop{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .sceneTop .ic{width:40px;height:40px;border-radius:12px;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;}
+  .sceneTop b{font-size:19px;font-weight:900;}
+  .back{margin-left:auto;border:2px solid var(--btnbd);background:var(--btn);border-radius:14px;padding:8px 12px;font-size:15px;font-weight:700;cursor:pointer;min-height:44px;color:var(--ink);}
+  .chips{display:flex;gap:6px;margin:2px 0 12px;flex-wrap:wrap;}
+  .chip{font-size:14px;font-weight:800;padding:6px 12px;border-radius:20px;background:#eef3f4;color:var(--soft);border:2px solid transparent;}
+  .chip.cur{background:var(--focus);color:#fff;} .chip.dn{background:var(--okbg);color:var(--ok);}
+  .guide{display:flex;gap:10px;align-items:flex-start;background:#f3faf9;border:2px solid #d5ecea;border-radius:16px;padding:12px;margin-bottom:12px;}
+  body.calm .guide{background:#f3f6f6;border-color:#e0e6e6;}
+  .guide .star{font-size:30px;line-height:1;}
+  body:not(.calm) .guide .star{animation:bob 2.4s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  .guide .bub{flex:1;font-size:17.5px;font-weight:600;}
+  .sayBtn{border:none;background:#dff1ef;color:var(--g1);border-radius:12px;width:44px;height:44px;font-size:20px;cursor:pointer;flex:0 0 auto;}
+  body.calm .sayBtn{background:#e7eeee;color:#5b8f8c;}
+  .stage{margin:6px 0 14px;display:flex;justify-content:center;flex-wrap:wrap;gap:10px;}
+  .qtext{font-size:22px;font-weight:800;text-align:center;margin:6px 0 14px;}
+  .opts{display:grid;gap:12px;}
+  .opt{display:flex;align-items:center;gap:10px;border:3px solid var(--btnbd);background:#fbfdfd;border-radius:18px;padding:16px 16px;font-size:21px;font-weight:800;cursor:pointer;min-height:60px;text-align:left;color:var(--ink);width:100%;transition:transform .1s;}
+  .opt:hover{border-color:var(--focus);} .opt .lab{flex:1;} .opt .spk{background:transparent;border:none;font-size:20px;cursor:pointer;color:var(--soft);padding:4px;}
+  .opt.right{border-color:var(--ok);background:var(--okbg);color:var(--ok);}
+  .opt.wrong{border-color:var(--warn);background:var(--warnbg);color:var(--warn);}
+  body:not(.calm) .opt.wrong{animation:wob .4s;}
+  @keyframes wob{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .opt[disabled]{cursor:default;}
+  .hint{margin-top:12px;background:#fff7ec;border:2px dashed #eac489;border-radius:14px;padding:12px 14px;font-size:17px;font-weight:600;color:#8a5a1c;display:none;}
+  .hint.show{display:block;} .hint b{color:var(--warn);}
+  .go{display:block;width:100%;margin-top:16px;border:none;border-radius:18px;padding:16px;font-size:21px;font-weight:900;color:#fff;background:var(--ok);cursor:pointer;min-height:62px;}
+  .go.big{background:linear-gradient(90deg,var(--g1),var(--g2));} body.calm .go.big{background:#5b8f8c;} .go.watch{background:var(--focus);}
+  .progressDots{display:flex;gap:7px;justify-content:center;margin-bottom:10px;}
+  .progressDots span{width:12px;height:12px;border-radius:50%;background:#dbe4e6;} .progressDots span.cur{background:var(--focus);transform:scale(1.25);} .progressDots span.f{background:var(--ok);}
+  .eq{font-size:28px;font-weight:900;text-align:center;font-variant-numeric:tabular-nums;line-height:1.5;}
+  .eq .z{color:var(--g3);} .eq .p{color:var(--ok);} .eq .m{color:var(--g4);} .eq .q{color:var(--g1);}
+  .note0{color:var(--g3);font-size:15px;text-align:center;font-weight:800;margin-top:2px;}
+  .symbig{font-size:58px;font-weight:900;text-align:center;line-height:1;}
+  .symbig.plus{color:var(--ok);} .symbig.minus{color:var(--g4);}
+  .symcap{text-align:center;color:var(--soft);font-size:15px;margin-top:2px;font-weight:700;}
+  .pvb{border-collapse:collapse;margin:0 auto;}
+  .pvb th{font-size:13px;color:var(--soft);font-weight:800;padding:4px 16px;border:2px solid #b9cdd0;background:#eef5f6;line-height:1.25;}
+  .pvb td{font-size:28px;font-weight:900;text-align:center;padding:6px 16px;border:2px solid #b9cdd0;}
+  .pvb td.hi{background:#fff2c9;color:#c77a12;}
+  .dv{display:inline-block;}
+  .dvrow{display:flex;justify-content:flex-end;align-items:center;}
+  .dvrow .op{width:28px;text-align:center;font-size:26px;font-weight:900;color:var(--g2);flex:0 0 auto;}
+  .dvcell{width:26px;height:38px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;font-variant-numeric:tabular-nums;flex:0 0 auto;}
+  .dvcell.dot{width:12px;}
+  .dvcell.pad{color:var(--g3);}
+  .dvcell.ans{color:var(--g1);}
+  .dvline{border-top:3px solid var(--ink);margin:3px 0;}
+  .gridwrap{display:flex;flex-direction:column;align-items:center;gap:10px;margin:4px 0 6px;}
+  .g100board{display:grid;grid-template-columns:repeat(10,1fr);gap:2px;width:min(320px,86vw);aspect-ratio:1/1;background:#cfe6e3;padding:3px;border-radius:10px;border:2px solid #9fc4c0;touch-action:manipulation;}
+  .gcell{border:1px solid #bcd6d2;background:#fff;border-radius:3px;cursor:pointer;padding:0;min-width:0;min-height:0;transition:background .08s;}
+  .gcell:hover{background:#eafaf8;}
+  .gcell.on{background:#2fb5aa;border-color:#2fb5aa;}
+  body.calm .gcell.on{background:#5b9f99;}
+  .gcount{font-size:21px;font-weight:900;color:var(--soft);}
+  .gcount.ok{color:var(--ok);}
+  .rulerwrap{display:flex;flex-direction:column;align-items:center;gap:10px;margin:4px 0 6px;width:100%;}
+  .rctrls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+  .rbtn{border:2px solid var(--btnbd);background:var(--btn);color:var(--ink);border-radius:14px;padding:10px 16px;font-size:19px;font-weight:900;cursor:pointer;min-height:48px;min-width:62px;}
+  .rbtn:hover{border-color:var(--focus);}
+  .rcount{font-size:21px;font-weight:900;color:var(--soft);}
+  .rcount.ok{color:var(--ok);}
+  .cmpwrap{display:flex;flex-direction:column;align-items:center;gap:12px;}
+  .cmpboard{display:flex;align-items:stretch;gap:3px;justify-content:center;flex-wrap:nowrap;}
+  .cmpcol{display:flex;flex-direction:column;align-items:center;border:2px solid #e0e6e6;border-radius:10px;padding:4px;min-width:42px;}
+  .cmpcol.active{border-color:var(--g1);background:#eafaf8;cursor:pointer;}
+  .cmpcol.eq{background:#eef2f3;border-color:#d6dede;}
+  .cmpcol.win{background:#e5f6ee;border-color:var(--ok);}
+  .cmpdot{display:flex;flex-direction:column;align-items:center;padding:4px 0;}
+  .cmpcol .pn,.cmpdot .pn{font-size:10px;color:var(--soft);font-weight:800;white-space:nowrap;height:30px;display:flex;align-items:center;}
+  .cmpcol .da,.cmpcol .db,.cmpdot .da,.cmpdot .db{font-size:26px;font-weight:900;font-variant-numeric:tabular-nums;height:34px;display:flex;align-items:center;}
+  .cmpcol .dwin{color:var(--ok);}
+  .cmpcol .hand,.cmpdot .hand{height:20px;font-size:16px;line-height:1;}
+  .cmpstatus{font-size:18px;font-weight:800;color:var(--soft);min-height:28px;text-align:center;}
+  .cmpstatus.ok{color:var(--ok);}
+  .celebrate{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden;}
+  .conf{position:absolute;top:-20px;font-size:22px;animation:fall 2.2s linear forwards;}
+  @keyframes fall{to{transform:translateY(105vh) rotate(360deg);opacity:.2;}}
+  .foot{text-align:center;color:var(--soft);font-size:13px;margin-top:20px;line-height:1.8;}
+  .hidden{display:none !important;}
+  @media (prefers-reduced-motion: reduce){ *{animation:none !important;transition:none !important;} }
+</style>
+
+<style id="jnav-css">
+:root{--jnav-h:94px;}
+#jiang-nav{position:sticky;top:0;z-index:99999;
+  background:linear-gradient(95deg,#0f9e99,#7b5fd0);
+  box-shadow:0 2px 12px rgba(36,59,72,.22);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Heiti TC",system-ui,sans-serif;
+  letter-spacing:.3px;}
+#jiang-nav .jn-wrap{max-width:860px;margin:0 auto;padding:7px 10px 9px;}
+#jiang-nav .jn-row{display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:nowrap;}
+#jiang-nav a,#jiang-nav span.jn-item{display:inline-flex;align-items:center;justify-content:center;gap:4px;
+  color:#fff;text-decoration:none;font-weight:800;font-size:15px;border-radius:13px;
+  padding:9px 10px;min-height:42px;white-space:nowrap;line-height:1;}
+#jiang-nav a.jn-item:hover{background:rgba(255,255,255,.2);}
+#jiang-nav .jn-home{background:rgba(255,255,255,.17);border:1.6px solid rgba(255,255,255,.55);
+  font-weight:900;padding:9px 16px;}
+#jiang-nav .jn-home:hover{background:rgba(255,255,255,.32);}
+#jiang-nav .jn-disabled{opacity:.42;cursor:not-allowed;}
+#jiang-nav .jn-sep{color:rgba(255,255,255,.55);font-weight:700;padding:0 1px;}
+#jiang-nav .jn-switch{display:flex;align-items:center;justify-content:center;gap:7px;
+  flex-wrap:wrap;margin-top:7px;}
+#jiang-nav .jn-tag{color:rgba(255,255,255,.92);font-size:13px;font-weight:800;margin-right:2px;}
+#jiang-nav .jn-pill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;
+  padding:6px 13px;font-size:14px;font-weight:800;min-height:38px;border:1.6px solid rgba(255,255,255,.5);
+  color:#fff;text-decoration:none;background:transparent;line-height:1;}
+#jiang-nav a.jn-pill:hover{background:rgba(255,255,255,.2);}
+#jiang-nav .jn-pill.cur{background:#fff;color:#0f6f6b;border-color:#fff;}
+@media (max-width:430px){
+  #jiang-nav a,#jiang-nav span.jn-item{font-size:13.5px;padding:8px 7px;}
+  #jiang-nav .jn-home{padding:8px 11px;}
+  #jiang-nav .jn-pill{font-size:12.5px;padding:5px 10px;}
+}
+@media print{ #jiang-nav{display:none !important;} }
+</style>
+
+</head>
+<body>
+<nav id="jiang-nav"><div class="jn-wrap"><div class="jn-row"><a class="jn-item" href="unit06-teach.html" title="第 6 單元 三角形">◀ 上一單元</a><span class="jn-sep">｜</span><a class="jn-item jn-home" href="index.html">🏠 總目錄</a><span class="jn-sep">｜</span><a class="jn-item" href="unit08-teach.html" title="第 8 單元 整數四則計算">下一單元 ▶</a></div><div class="jn-switch"><span class="jn-tag">第 7 單元《小數》</span><span class="jn-pill cur">🎮 互動教學</span><a class="jn-pill" href="unit07-quiz.html">📝 形成性評量</a></div></div></nav>
+<div class="wrap">
+  <div class="brand"><span class="dot">江</span><b>江 JIANG ・ 跟林老師學數學</b></div>
+  <div class="ctrl">
+    <button id="btnCalm" data-act="calm">🌙 減敏模式</button>
+    <button id="btnSpeak" class="on" data-act="speak">🔊 朗讀：開</button>
+    <button data-act="restart">↺ 重新開始</button>
+  </div>
+  <h1 class="title">小數大探險</h1>
+  <p class="subtitle">四年級數學・第七單元　點一點就能自己學</p>
+  <div id="app"></div>
+  <div class="foot">做完一關會蓋一個勾勾。做到哪裡都會自動存起來，下次打開接著玩。<br>看不懂字沒關係，按 🔊 我唸給你聽。</div>
+</div>
+<div id="celebrate" class="celebrate hidden"></div>
+
+<script>
+"use strict";
+function dParts(s){ const a=String(s).split("."); return [a[0], a[1]||""]; }
+function grid100(n){
+  const c=14,o=4,sz=o*2+c*10; let s=`<svg viewBox="0 0 ${sz} ${sz}" width="100%" style="max-width:148px" xmlns="http://www.w3.org/2000/svg">`;
+  const full=Math.floor(n/10), rem=n%10;
+  for(let col=0;col<10;col++) for(let row=0;row<10;row++){
+    const f = col<full || (col===full && row<rem);
+    s+=`<rect x="${o+col*c}" y="${o+row*c}" width="${c}" height="${c}" fill="${f?'#7fd0c9':'#ffffff'}" stroke="#9fc4c0" stroke-width="1"/>`;
+  }
+  return s+`</svg>`;
+}
+function cmpCols(a,b){
+  const pa=dParts(a), pb=dParts(b);
+  const intW=Math.max(pa[0].length,pb[0].length), dp=Math.max(pa[1].length,pb[1].length);
+  const sa=pa[0].padStart(intW,"0")+pa[1].padEnd(dp,"0");
+  const sb=pb[0].padStart(intW,"0")+pb[1].padEnd(dp,"0");
+  const intN=["個位","十位","百位"], decN=["十分位","百分位"], names=[];
+  for(let k=intW-1;k>=0;k--) names.push(intN[k]||"整數");
+  for(let k=0;k<dp;k++) names.push(decN[k]||"小數");
+  return { names, da:sa.split("").map(Number), db:sb.split("").map(Number), dot:intW };
+}
+function initCmp(a,b){ const c=cmpCols(a,b); return {aStr:a,bStr:b,names:c.names,da:c.da,db:c.db,dot:c.dot,next:0,done:false,winCol:-1,winSide:null}; }
+function cmpColsHTML(st){
+  let cols="";
+  for(let i=0;i<st.names.length;i++){
+    if(i===st.dot) cols+=`<div class="cmpdot"><div class="pn"></div><div class="da">．</div><div class="db">．</div><div class="hand"></div></div>`;
+    const active=(i===st.next && !st.done), win=(st.done&&i===st.winCol);
+    let cls="cmpcol"; if(active)cls+=" active"; if(i<st.next && !win)cls+=" eq"; if(win)cls+=" win";
+    const daW=(win&&st.winSide==="a")?"da dwin":"da", dbW=(win&&st.winSide==="b")?"db dwin":"db";
+    cols+=`<div class="${cls}" ${active?'data-act="cmp"':''}><div class="pn">${st.names[i]}</div><div class="${daW}">${st.da[i]}</div><div class="${dbW}">${st.db[i]}</div><div class="hand">${active?"👆":""}</div></div>`;
+  }
+  return cols;
+}
+function cmpStatus(st){
+  if(!st.done) return st.next===0 ? "從最左邊（最大位）開始，點一下比比看。" : "這一位一樣，再比下一位！點點看。";
+  if(st.winSide==="eq") return "每一位都一樣，兩個一樣大！";
+  return (st.winSide==="a"?st.aStr:st.bStr)+" 比較大！";
+}
+function cmpWidget(){ return `<div class="cmpboard">${cmpColsHTML(cmp)}</div><div class="cmpstatus ${cmp.done?'ok':''}">${cmpStatus(cmp)}</div>`; }
+function cmpBoardStatic(a,b){
+  const st=initCmp(a,b);
+  while(!st.done){ const i=st.next; if(st.da[i]===st.db[i]){ st.next=i+1; if(st.next>=st.names.length){st.done=true;st.winSide="eq";} } else { st.done=true; st.winCol=i; st.winSide=st.da[i]>st.db[i]?"a":"b"; } }
+  st.next=st.names.length;
+  return `<div class="cmpboard">${cmpColsHTML(st)}</div><div class="cmpstatus ok">${cmpStatus(st)}</div>`;
+}
+function rulerSVG(cm, interactive){
+  const L=16, scale=3.28;
+  let s=`<svg viewBox="0 0 360 86" width="100%" style="max-width:360px" xmlns="http://www.w3.org/2000/svg">`;
+  s+=`<text x="180" y="13" font-size="12" text-anchor="middle" fill="#5b6f7a" font-weight="800">1 公尺 ＝ 100 公分</text>`;
+  s+=`<line x1="${L}" y1="55" x2="${(L+100*scale).toFixed(1)}" y2="55" stroke="#4a6a74" stroke-width="2"/>`;
+  for(let c=0;c<=100;c++){ const x=L+c*scale; const h=c%10===0?15:(c%5===0?10:6);
+    s+=`<line x1="${x.toFixed(1)}" y1="${55-h}" x2="${x.toFixed(1)}" y2="55" stroke="#7d97a0" stroke-width="${c%10===0?1.4:0.8}"/>`;
+    if(c%10===0) s+=`<text x="${x.toFixed(1)}" y="72" font-size="10" text-anchor="middle" fill="#5b6f7a" font-weight="700">${c}</text>`;
+  }
+  s+=`<text x="${(L+100*scale).toFixed(1)}" y="84" font-size="10" text-anchor="end" fill="#5b6f7a">公分</text>`;
+  const tx=(cm*scale).toFixed(1);
+  s+=`<g id="rptg" transform="translate(${interactive?0:tx},0)"><line x1="${L}" y1="22" x2="${L}" y2="55" stroke="#e0658a" stroke-width="2.5"/><polygon points="${L},18 ${L-5},8 ${L+5},8" fill="#e0658a"/></g>`;
+  return s+`</svg>`;
+}
+function dvert(a,b,op,ans,showAns){
+  const pa=dParts(a),pb=dParts(b),pr=dParts(ans);
+  const intW=Math.max(pa[0].length,pb[0].length,pr[0].length), dp=Math.max(pa[1].length,pb[1].length,pr[1].length);
+  function row(iPart,dPart,cls){
+    let out=""; const ip=iPart.padStart(intW," ");
+    for(const ch of ip) out+=`<span class="dvcell ${cls||''}">${ch===" "?"":ch}</span>`;
+    out+=`<span class="dvcell dot ${cls||''}">.</span>`;
+    const dpad=dPart.padEnd(dp,"0");
+    for(let k=0;k<dp;k++) out+=`<span class="dvcell ${cls||''} ${k>=dPart.length?'pad':''}">${dpad[k]}</span>`;
+    return out;
+  }
+  const lineW=(intW+dp)*26+12;
+  let s=`<div class="dv">`;
+  s+=`<div class="dvrow"><span class="op"></span>${row(pa[0],pa[1])}</div>`;
+  s+=`<div class="dvrow"><span class="op">${op}</span>${row(pb[0],pb[1])}</div>`;
+  s+=`<div class="dvline" style="width:${lineW}px;margin-left:auto"></div>`;
+  if(showAns) s+=`<div class="dvrow"><span class="op"></span>${row(pr[0],pr[1],'ans')}</div>`;
+  return s+`</div>`;
+}
+const V={
+  grid:grid100, dvert:dvert,
+  eq(html,note){ return `<div class="eq">${html}</div>`+(note?`<div class="note0">${note}</div>`:""); },
+  sym(op){ const plus=op==="＋";
+    return `<div><div class="symbig ${plus?"plus":"minus"}">${op}</div><div class="symcap">${plus?"加　合起來　共":"減　相差　剩下"}</div></div>`; },
+  board(a,b,c,hi){ return `<table class="pvb"><tr><th>個<br>位</th><th>十<br>分<br>位</th><th>百<br>分<br>位</th></tr>`+
+    `<tr><td class="${hi===0?'hi':''}">${a}</td><td class="${hi===1?'hi':''}">${b}</td><td class="${hi===2?'hi':''}">${c}</td></tr></table>`; }
+};
+
+const SCENES=[
+  { id:1, icon:"🔢", title:"認識二位小數", cls:"g1", sub:"親手點百格、位名",
+    layers:[
+      { kind:"watch", label:"我看",
+        steps:[
+          { say:"1 張色紙平分成 100 格，塗 1 格就是 0.01 張。等一下換你用手指或滑鼠，一格一格點點看。", html:V.grid(1) },
+          { say:"塗滿一整直行是 10 格，就是 0.1 張。小數的位名：個位、十分位、百分位。1.68 的個位是 1、十分位是 6、百分位是 8。", html:`<div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;justify-content:center">${V.grid(10)}${V.board("1","6","8")}</div>` },
+          { say:"讀法。整數部分讀位名，小數部分一個一個讀。21.21 讀作二十一點二一。", html:V.eq(`21.21 讀作「二十一點二一」`) }
+        ]},
+      { kind:"quiz", label:"我懂",
+        items:[
+          { say:"換你了。用手指或滑鼠，在百格上一格一格點點看，塗出 1 格。塗到 1 格就是 0.01 張。", gridTarget:1,
+            q:"點點看，塗出 1 格（0.01）", hint:"目標 1 格。點一下塗色，點錯再點一下取消。下面會顯示你塗了幾格。" },
+          { say:"這次塗出 9 格。一格一格慢慢點、慢慢數，塗到 9 格就是 0.09。", gridTarget:9,
+            q:"點點看，塗出 9 格（0.09）", hint:"目標 9 格。下面會告訴你已經塗幾格了。" }
+        ]},
+      { kind:"quiz", label:"我做",
+        items:[
+          { say:"塗滿一整直行，也就是 10 格。一格一格點，塗到 10 格就是 0.1。", gridTarget:10,
+            q:"點點看，塗出 10 格（0.1）", hint:"目標 10 格，剛好一整直行。" },
+          { say:"1.68 的十分位數字是幾？", html:V.board("1","6","8",1),
+            q:"十分位是幾？", choices:[["6","6"],["8","8"],["1","1"]], ans:0, hint:"小數點右邊第一位是十分位，是 6。" }
+        ]},
+      { kind:"quiz", label:"我會",
+        items:[
+          { say:"塗 4 整行再加 3 格。一格一格點、一格一格數，塗到 43 格就是 0.43。", gridTarget:43,
+            q:"點點看，塗出 43 格（0.43）", hint:"目標 43 格：先塗 4 整行（40 格），再加 3 格。" },
+          { say:"想一想。21.21 要怎麼讀？", html:V.eq(`21.21 讀作 ?`),
+            q:"怎麼讀？", choices:[["二十一點二一","二十一點二一"],["二十一點二十一","二十一點二十一"]], ans:0, hint:"小數部分一個一個讀，是點二一，不是點二十一。" }
+        ]}
+    ]},
+
+  { id:2, icon:"📏", title:"公分與公尺", cls:"g2", sub:"動尺、數公分",
+    layers:[
+      { kind:"watch", label:"我看",
+        steps:[
+          { say:"這是一把尺。1 公尺就是 100 公分。尺上每 1 小格是 1 公分。", html:rulerSVG(0,false) },
+          { say:"1 公分等於 0.01 公尺。紅色箭頭指到 10 公分，就是 0.1 公尺。等一下換你用按鈕移動箭頭。", html:rulerSVG(10,false) },
+          { say:"幾公尺又幾公分：9 公分是 0.09 公尺，所以 1 公尺 9 公分是 1.09 公尺。", html:V.eq(`1 公尺 9 公分 = 1.09 公尺`) }
+        ]},
+      { kind:"quiz", label:"我懂",
+        items:[
+          { say:"換你了。用下面的按鈕，把紅色箭頭移到 1 公分。1 公分就是 0.01 公尺。", rulerTarget:1,
+            q:"把箭頭移到 1 公分（0.01 公尺）", hint:"按 ＋1 一次。下面會顯示箭頭指到幾公分、等於幾公尺。" },
+          { say:"這次把箭頭移到 10 公分。10 公分就是 0.1 公尺。", rulerTarget:10,
+            q:"把箭頭移到 10 公分（0.1 公尺）", hint:"按 ＋10 一次，或按 ＋1 十次。" }
+        ]},
+      { kind:"quiz", label:"我做",
+        items:[
+          { say:"把紅色箭頭移到 6 公分。移到就知道 6 公分等於多少公尺。", rulerTarget:6,
+            q:"把箭頭移到 6 公分（0.06 公尺）", hint:"按 ＋1 六次。6 公分 = 0.06 公尺。" },
+          { say:"把紅色箭頭移到 60 公分。60 公分等於多少公尺？", rulerTarget:60,
+            q:"把箭頭移到 60 公分（0.6 公尺）", hint:"按 ＋10 六次。60 公分 = 0.6 公尺。" }
+        ]},
+      { kind:"quiz", label:"我會",
+        items:[
+          { say:"想一想。2 公尺 7 公分等於幾公尺？1 公尺是 100 公分，7 公分是 0.07 公尺。", html:V.eq(`2 公尺 7 公分 = ? 公尺`,"7 公分 = 0.07"),
+            q:"等於幾公尺？", choices:[["2.07","2.07 公尺"],["2.7","2.7 公尺"],["27","27 公尺"]], ans:0, hint:"7 公分是 0.07，加 2 公尺是 2.07 公尺。" },
+          { say:"想一想。1 公尺 9 公分等於幾公尺？", html:V.eq(`1 公尺 9 公分 = ? 公尺`),
+            q:"等於幾公尺？", choices:[["1.09","1.09 公尺"],["1.9","1.9 公尺"],["19","19 公尺"]], ans:0, hint:"9 公分是 0.09，加 1 公尺是 1.09 公尺。" }
+        ]}
+    ]},
+
+  { id:3, icon:"⚖️", title:"比大小", cls:"g3", sub:"對齊、一位一位比",
+    layers:[
+      { kind:"watch", label:"我看",
+        steps:[
+          { say:"比小數大小，要先把小數點對齊，再從最高位一位一位比。", html:V.eq(`小數點對齊 → 從最高位一位一位比`) },
+          { say:"看這個。2.1 和 1.92 對齊後排成一欄一欄。從個位比：2 比 1 大，所以 2.1 比較大。等一下換你一位一位點點看。", html:cmpBoardStatic("2.1","1.92") }
+        ]},
+      { kind:"quiz", label:"我懂",
+        items:[
+          { cmp:true, a:"2.1", b:"1.92", say:"換你了。從最左邊（最大位）開始，一位一位點點看，比 2.1 和 1.92 哪個大。",
+            q:"一位一位點，比比看哪個大", hint:"先比個位：2 和 1。不一樣就分出來了。" },
+          { cmp:true, a:"3.46", b:"3.6", say:"點點看，比 3.46 和 3.6。對齊後是 3.46 和 3.60。",
+            q:"一位一位點，比比看哪個大", hint:"個位一樣，再比十分位：4 和 6。" }
+        ]},
+      { kind:"quiz", label:"我做",
+        items:[
+          { cmp:true, a:"0.59", b:"0.6", say:"點點看，比 0.59 和 0.6。對齊後是 0.59 和 0.60。",
+            q:"一位一位點，比比看哪個大", hint:"個位都是 0，再比十分位：5 和 6。" },
+          { cmp:true, a:"14.3", b:"14.31", say:"點點看，比 14.3 和 14.31。對齊後是 14.30 和 14.31。",
+            q:"一位一位點，比比看哪個大", hint:"前面都一樣，一直比到百分位：0 和 1。" }
+        ]},
+      { kind:"quiz", label:"我會",
+        items:[
+          { cmp:true, a:"1.5", b:"1.52", say:"想一想。跳高選手甲 1.5 公尺、丙 1.52 公尺，誰比較高？一位一位點點看。",
+            q:"一位一位點，比比看誰高", hint:"對齊成 1.50 和 1.52，比到百分位：0 和 2。" },
+          { cmp:true, a:"0.10", b:"0.1", say:"想一想。0.10 和 0.1 一樣大嗎？一位一位點點看。",
+            q:"一位一位點，看看是不是一樣大", hint:"對齊成 0.10 和 0.10，每一位都一樣，就是一樣大。" }
+        ]}
+    ]},
+
+  { id:4, icon:"🧮", title:"小數加減", cls:"g4", sub:"直式對齊、補0、進退位",
+    layers:[
+      { kind:"watch", label:"我看",
+        steps:[
+          { say:"認符號。加號是合起來，減號是相差。小數加減要用直式算，把小數點對齊。", html:`<div style="display:flex;gap:26px;justify-content:center">${V.sym("＋")}${V.sym("－")}</div>` },
+          { say:"看直式。位數不夠時，缺位補 0，就是橘色的 0。4.68 加 5.7，把 5.7 補成 5.70，小數點對齊再加，等於 10.38。", html:V.dvert("4.68","5.7","＋","10.38",true) },
+          { say:"減法不夠減要借位。5.2 減 3.24，先補成 5.20，不夠減就向前借，等於 1.96。", html:V.dvert("5.2","3.24","－","1.96",true) }
+        ]},
+      { kind:"quiz", label:"我懂",
+        items:[
+          { say:"這一題「合起來」，要用加還是減？", html:V.sym("＋"),
+            q:"這一題是？", choices:[["加","加（合起來）"],["減","減（相差）"]], ans:0, hint:"合起來就是用加。" },
+          { say:"看直式。4.68 加 5.7，為了小數點對齊，5.7 要先補成幾？", html:V.dvert("4.68","5.7","＋","10.38",false),
+            q:"5.7 補成幾？", choices:[["5.70","5.70"],["5.07","5.07"],["57","57"]], ans:0, hint:"後面補一個 0（橘色那個），變成 5.70。" }
+        ]},
+      { kind:"quiz", label:"我做",
+        items:[
+          { say:"看直式算。媽媽包肉粽用 4.25 公斤糯米，甜粽用 2.64 公斤，兩種共用幾公斤？", html:V.dvert("4.25","2.64","＋","6.89",false),
+            q:"共用幾公斤？", choices:[["6.89","6.89 公斤"],["6.79","6.79 公斤"],["5.89","5.89 公斤"]], ans:0, hint:"小數點對齊，4.25 加 2.64 等於 6.89。" },
+          { say:"看直式算。2.02 加 0.88 等於多少？", html:V.dvert("2.02","0.88","＋","2.9",false),
+            q:"等於多少？", choices:[["2.9","2.9（也就是 2.90）"],["2.09","2.09"],["2.19","2.19"]], ans:0, hint:"2.02 加 0.88 等於 2.90，後面的 0 可以省略，寫成 2.9。" }
+        ]},
+      { kind:"quiz", label:"我會",
+        items:[
+          { say:"看直式算。一條緞帶長 2.34 公尺，用去 1.75 公尺，還剩下幾公尺？", html:V.dvert("2.34","1.75","－","0.59",false),
+            q:"還剩幾公尺？", choices:[["0.59","0.59 公尺"],["0.69","0.69 公尺"],["1.59","1.59 公尺"]], ans:0, hint:"小數點對齊，2.34 減 1.75，借位後等於 0.59。" },
+          { say:"想一想。看直式，5.2 減 3.24。要先補 0 再借位，等於多少？", html:V.dvert("5.2","3.24","－","1.96",false),
+            q:"等於多少？", choices:[["1.96","1.96"],["2.04","2.04"],["1.86","1.86"]], ans:0, hint:"5.2 補成 5.20（橘色 0），減 3.24 等於 1.96。" }
+        ]}
+    ]}
+];
+
+/* ============ 引擎（與前幾單元相同） ============ */
+const KEY="sped_math_decimal_v1";
+let prog={ guan:[], calm:false, speak:true };
+try{ const s=localStorage.getItem(KEY); if(s) prog=Object.assign(prog, JSON.parse(s)); }catch(e){}
+while(prog.guan.length<SCENES.length) prog.guan.push(0);
+prog.guan=prog.guan.slice(0,SCENES.length);
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(prog)); }catch(e){} }
+
+let view="map", gi=0, li=0, ii=0, answered=false, gridShaded=new Set(), rulerCm=0, cmp=null;
+const app=document.getElementById("app");
+
+let zhVoice=null;
+function pickVoice(){ const vs=window.speechSynthesis?speechSynthesis.getVoices():[]; zhVoice=vs.find(v=>/zh[-_]TW/i.test(v.lang))||vs.find(v=>/zh/i.test(v.lang))||null; }
+if(window.speechSynthesis){ pickVoice(); speechSynthesis.onvoiceschanged=pickVoice; }
+function speak(t){ if(!prog.speak||!t||!window.speechSynthesis) return;
+  try{ speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(String(t).replace(/＋/g,"加").replace(/－/g,"減").replace(/＞/g,"大於").replace(/＜/g,"小於").replace(/＝/g,"等於").replace(/□/g,"").replace(/\?/g,""));
+    u.lang="zh-TW"; u.rate=.92; u.pitch=1.02; if(zhVoice)u.voice=zhVoice; speechSynthesis.speak(u);
+  }catch(e){} }
+function stopSpeak(){ if(window.speechSynthesis) try{speechSynthesis.cancel();}catch(e){} }
+
+function party(){ if(prog.calm) return;
+  const box=document.getElementById("celebrate"); box.classList.remove("hidden"); box.innerHTML="";
+  const em=["⭐","🎉","✨","🌟","💫"];
+  for(let i=0;i<24;i++){ const s=document.createElement("div"); s.className="conf"; s.textContent=em[i%em.length];
+    s.style.left=(Math.random()*100)+"%"; s.style.animationDelay=(Math.random()*.5)+"s"; s.style.fontSize=(18+Math.random()*16)+"px"; box.appendChild(s); }
+  setTimeout(()=>{box.classList.add("hidden");box.innerHTML="";},2400);
+}
+
+function totalLayers(){ return SCENES.length*4; }
+function doneLayers(){ return prog.guan.reduce((a,b)=>a+b,0); }
+function guanUnlocked(g){ return g===0 || prog.guan[g-1]>=4; }
+function render(){ if(view==="map") renderMap(); else renderScene(); updateCtrl(); }
+function updateCtrl(){ document.body.classList.toggle("calm", prog.calm);
+  document.getElementById("btnCalm").classList.toggle("on", prog.calm);
+  const bs=document.getElementById("btnSpeak"); bs.classList.toggle("on", prog.speak); bs.textContent=prog.speak?"🔊 朗讀：開":"🔇 朗讀：關"; }
+function renderMap(){ const pct=Math.round(doneLayers()/totalLayers()*100); let sts="";
+  SCENES.forEach((s,g)=>{ const lock=!guanUnlocked(g), done=prog.guan[g]>=4;
+    let dots=""; for(let k=0;k<4;k++) dots+=`<span class="${k<prog.guan[g]?"f":""}"></span>`;
+    sts+=`<button class="st ${s.cls} ${lock?"lock":""}" data-act="${lock?"":"open"}" data-g="${g}">
+      <span class="ic">${lock?"🔒":s.icon}</span>
+      <span class="tx"><b>第 ${s.id} 關　${s.title}</b><small>${s.sub}</small><span class="dots">${dots}</span></span>
+      <span class="flag">${done?"✅":(lock?"":"▶")}</span></button>`; });
+  app.innerHTML=`<div class="map"><div class="bar"><i style="width:${pct}%"></i></div>
+    <div class="guide"><span class="star">⭐</span>
+      <div class="bub">${doneLayers()===0?"哈囉，我是林老師！這一單元我們一起認識小數、換算、比大小和加減。點下面亮亮的關卡出發吧。":
+        (pct===100?"全部通關了，你把小數學起來了，整本數學都完成了，太棒了！":"做得好！接著點亮亮的關卡繼續喔。")}</div>
+      <button class="sayBtn" data-act="say" data-text="哈囉，我是小星，這一單元我們一起認識小數、換算、比大小和加減。點亮亮的關卡出發吧。">🔊</button></div>
+    <div class="stations">${sts}</div></div>`; }
+function renderScene(){ const s=SCENES[gi], layer=s.layers[li]; let chips="";
+  s.layers.forEach((L,k)=>{ const cls=k<prog.guan[gi]?"dn":(k===li?"cur":""); chips+=`<span class="chip ${cls}">${L.label}${k<prog.guan[gi]?" ✓":""}</span>`; });
+  let body="";
+  if(layer.kind==="watch"){ const st=layer.steps[ii], last=ii===layer.steps.length-1;
+    body=`<div class="guide"><span class="star">⭐</span><div class="bub">${st.say}</div><button class="sayBtn" data-act="say" data-text="${esc(st.say)}">🔊</button></div>
+      <div class="stage">${st.html}</div>
+      ${last?`<button class="go watch" data-act="watchdone">我看懂了，往下 ▶</button>`:`<button class="go watch" data-act="watchnext">繼續看 ▶</button>`}`;
+  }else{ const it=layer.items[ii]; let dots=""; layer.items.forEach((_,k)=> dots+=`<span class="${k<ii?"f":(k===ii?"cur":"")}"></span>`);
+    let middle;
+    if(it.gridTarget!=null){
+      gridShaded=new Set();
+      let cells=""; for(let c=0;c<100;c++) cells+=`<button class="gcell" data-act="cell" data-i="${c}" aria-label="格子"></button>`;
+      middle=`<div class="gridwrap"><div class="g100board">${cells}</div><div class="gcount" id="gcount">已塗 0 格</div></div>`;
+    } else if(it.rulerTarget!=null){
+      rulerCm=0;
+      middle=`<div class="rulerwrap">${rulerSVG(0,true)}
+        <div class="rctrls">
+          <button class="rbtn" data-act="rstep" data-d="-10">－10</button>
+          <button class="rbtn" data-act="rstep" data-d="-1">－1</button>
+          <button class="rbtn" data-act="rstep" data-d="1">＋1</button>
+          <button class="rbtn" data-act="rstep" data-d="10">＋10</button>
+        </div>
+        <div class="rcount" id="rcount">指到 0 公分　＝　0 公尺</div></div>`;
+    } else if(it.cmp){
+      cmp=initCmp(it.a,it.b);
+      middle=`<div class="cmpwrap" id="cmpbox">${cmpWidget()}</div>`;
+    } else {
+      let opts=""; it.choices.forEach((c,k)=>{ const lab=c[1]?c[1]:c[0];
+        opts+=`<button class="opt" data-act="ans" data-k="${k}"><span class="lab">${lab}</span><button class="spk" data-act="say" data-text="${esc(lab)}">🔊</button></button>`; });
+      middle=`<div class="opts">${opts}</div>`;
+    }
+    const hintCls = (it.gridTarget!=null||it.rulerTarget!=null||it.cmp) ? "hint show" : "hint";
+    body=`<div class="progressDots">${dots}</div>
+      <div class="guide"><span class="star">⭐</span><div class="bub">${it.say}</div><button class="sayBtn" data-act="say" data-text="${esc(it.say)}">🔊</button></div>
+      ${it.html?`<div class="stage">${it.html}</div>`:""}
+      <div class="qtext">${it.q}</div>${middle}
+      <div class="${hintCls}" id="hintBox"><b>小提示：</b>${it.hint}</div>
+      <button class="go big hidden" id="nextBtn" data-act="next">做對了，繼續 ▶</button>`;
+  }
+  app.innerHTML=`<div class="scene"><div class="sceneTop"><span class="ic" style="background:var(--${s.cls})">${s.icon}</span>
+    <b>第 ${s.id} 關　${s.title}</b><button class="back" data-act="map">🗺️ 地圖</button></div>
+    <div class="chips">${chips}</div>${body}</div>`;
+  answered=false; const sayText=layer.kind==="watch"?layer.steps[ii].say:layer.items[ii].say; setTimeout(()=>speak(sayText),260);
+}
+function esc(t){ return String(t).replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
+function openGuan(g){ gi=g; li=Math.min(prog.guan[g],3); ii=0; view="scene"; render(); }
+function completeLayer(){ if(prog.guan[gi]<li+1){ prog.guan[gi]=li+1; save(); }
+  if(li>=3){ stopSpeak(); party(); setTimeout(()=>speak("這一關全部完成，你好棒！"),200); view="map"; render(); } else { li+=1; ii=0; render(); } }
+function onAnswer(k){ const layer=SCENES[gi].layers[li], it=layer.items[ii]; const btns=[...app.querySelectorAll(".opt")], target=btns[k]; if(answered) return;
+  if(k===it.ans){ answered=true; target.classList.add("right"); target.querySelector(".lab").insertAdjacentHTML("beforeend"," ⭐"); btns.forEach(b=>b.setAttribute("disabled","1"));
+    const praise=["答對了，你好棒！","太厲害了，就是這樣！","你自己算出來了！","完全正確！"][Math.floor(Math.random()*4)];
+    stopSpeak(); setTimeout(()=>speak(praise),120); const nb=document.getElementById("nextBtn"); nb.classList.remove("hidden"); nb.textContent=(ii>=layer.items.length-1)?"這一層完成 ▶":"做對了，繼續 ▶";
+  }else{ target.classList.add("wrong"); setTimeout(()=>target.classList.remove("wrong"),700); document.getElementById("hintBox").classList.add("show");
+    stopSpeak(); setTimeout(()=>speak("沒關係，再想一想。"+it.hint),120); } }
+function fmtDec(n){ return (n/100).toFixed(2).replace(/(\.\d)0$/,'$1'); }
+function onCell(i,btn){
+  const it=SCENES[gi].layers[li].items[ii]; if(!it||it.gridTarget==null||answered) return;
+  if(gridShaded.has(i)){ gridShaded.delete(i); btn.classList.remove("on"); }
+  else { gridShaded.add(i); btn.classList.add("on"); }
+  const n=gridShaded.size, gc=document.getElementById("gcount");
+  gc.textContent = n>0 ? `已塗 ${n} 格　＝　${fmtDec(n)} 張` : "已塗 0 格";
+  gc.classList.toggle("ok", n===it.gridTarget);
+  if(n===it.gridTarget){ answered=true; stopSpeak(); party(); setTimeout(()=>speak("太棒了，數對了！"),120);
+    const nb=document.getElementById("nextBtn"); nb.classList.remove("hidden");
+    nb.textContent=(ii>=SCENES[gi].layers[li].items.length-1)?"這一層完成 ▶":"做對了，繼續 ▶"; }
+}
+function nextItem(){ const layer=SCENES[gi].layers[li]; if(ii>=layer.items.length-1) completeLayer(); else { ii+=1; render(); } }
+function onRstep(d){
+  const it=SCENES[gi].layers[li].items[ii]; if(!it||it.rulerTarget==null||answered) return;
+  rulerCm=Math.max(0,Math.min(100,rulerCm+d));
+  const g=document.getElementById("rptg"); if(g) g.setAttribute("transform",`translate(${(rulerCm*3.28).toFixed(1)},0)`);
+  const rc=document.getElementById("rcount");
+  rc.textContent = `指到 ${rulerCm} 公分　＝　${rulerCm===0?"0":fmtDec(rulerCm)} 公尺`;
+  rc.classList.toggle("ok", rulerCm===it.rulerTarget);
+  if(rulerCm===it.rulerTarget){ answered=true; stopSpeak(); party(); setTimeout(()=>speak("太棒了，指對了！"),120);
+    const nb=document.getElementById("nextBtn"); nb.classList.remove("hidden");
+    nb.textContent=(ii>=SCENES[gi].layers[li].items.length-1)?"這一層完成 ▶":"做對了，繼續 ▶"; }
+}
+function onCmp(){
+  if(!cmp||cmp.done) return;
+  const i=cmp.next;
+  if(cmp.da[i]===cmp.db[i]){ cmp.next=i+1; if(cmp.next>=cmp.names.length){ cmp.done=true; cmp.winSide="eq"; } }
+  else { cmp.done=true; cmp.winCol=i; cmp.winSide=cmp.da[i]>cmp.db[i]?"a":"b"; }
+  const box=document.getElementById("cmpbox"); if(box) box.innerHTML=cmpWidget();
+  if(cmp.done){ answered=true; stopSpeak(); party();
+    const msg = cmp.winSide==="eq" ? "每一位都一樣，兩個一樣大" : ((cmp.winSide==="a"?cmp.aStr:cmp.bStr)+" 比較大");
+    setTimeout(()=>speak(msg),120);
+    const nb=document.getElementById("nextBtn"); nb.classList.remove("hidden");
+    nb.textContent=(ii>=SCENES[gi].layers[li].items.length-1)?"這一層完成 ▶":"做對了，繼續 ▶"; }
+}
+document.body.addEventListener("click",(e)=>{ const b=e.target.closest("[data-act]"); if(!b) return; const act=b.dataset.act;
+  if(act==="say"){ e.stopPropagation(); speak(b.dataset.text); return; }
+  if(act==="calm"){ prog.calm=!prog.calm; save(); render(); return; }
+  if(act==="speak"){ prog.speak=!prog.speak; save(); if(!prog.speak) stopSpeak(); updateCtrl(); return; }
+  if(act==="restart"){ if(confirm("要把進度全部清掉，從第一關重新開始嗎？")){ prog.guan=SCENES.map(()=>0); save(); view="map"; stopSpeak(); render(); } return; }
+  if(act==="open"){ openGuan(parseInt(b.dataset.g,10)); return; }
+  if(act==="map"){ view="map"; stopSpeak(); render(); return; }
+  if(act==="watchnext"){ ii+=1; render(); return; }
+  if(act==="watchdone"){ completeLayer(); return; }
+  if(act==="ans"){ onAnswer(parseInt(b.dataset.k,10)); return; }
+  if(act==="cell"){ onCell(parseInt(b.dataset.i,10), b); return; }
+  if(act==="rstep"){ onRstep(parseInt(b.dataset.d,10)); return; }
+  if(act==="cmp"){ onCmp(); return; }
+  if(act==="next"){ nextItem(); return; }
+});
+render();
+</script>
+
+<script>
+(function(){
+  function fit(){
+    var nav=document.getElementById('jiang-nav'); if(!nav) return;
+    var h=nav.offsetHeight||0;
+    document.documentElement.style.setProperty('--jnav-h', h+'px');
+    try{ document.documentElement.style.scrollPaddingTop=h+'px'; }catch(e){}
+    var tb=document.querySelector('.toolbar'); /* 評量頁既有列印工具列 */
+    if(tb){ tb.style.top=h+'px'; }
+  }
+  if(document.readyState!=='loading') fit(); else document.addEventListener('DOMContentLoaded',fit);
+  window.addEventListener('load',fit); window.addEventListener('resize',fit);
+})();
+</script>
+
+</body>
+</html>

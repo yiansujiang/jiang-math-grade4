@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>《一億以內的數》大探險</title>
+<style>
+  :root{
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    --bg1:#eaf6f6; --bg2:#f6efe6; --ink:#243b48; --soft:#5b6f7a;
+    --card:#ffffff; --line:#d7e3e6;
+    --g1:#0f9e99; --g2:#7b5fd0; --g3:#e0912f; --g4:#e0658a;
+    --ok:#2f9e6f; --okbg:#e5f6ee; --warn:#e07b3a; --warnbg:#fdefe3;
+    --btn:#f2f8f8; --btnbd:#bfd7da;
+    --focus:var(--g1);
+    --fs:20px; --radius:22px;
+  }
+  *{box-sizing:inherit;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Heiti TC",system-ui,sans-serif;
+    color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;
+    font-size:var(--fs);
+    line-height:1.7;
+    -webkit-text-size-adjust:100%;
+    letter-spacing:.3px;
+  }
+  body.calm{background:#f4f6f6;}
+  .wrap{max-width:820px;margin:0 auto;padding:12px 16px 60px;}
+
+  /* 品牌帶 */
+  .brand{display:flex;align-items:center;gap:10px;padding:6px 4px;}
+  .brand .dot{width:34px;height:34px;border-radius:50%;
+    background:radial-gradient(circle at 32% 30%,#8fd6d2,var(--g1));
+    display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;
+    box-shadow:0 2px 6px rgba(15,158,153,.35);}
+  body.calm .brand .dot{background:#7fb3b0;box-shadow:none;}
+  .brand b{font-size:15px;color:var(--soft);font-weight:700;letter-spacing:1px;}
+
+  /* 控制列 */
+  .ctrl{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 10px;}
+  .ctrl button{border:2px solid var(--btnbd);background:var(--btn);color:var(--ink);
+    border-radius:16px;padding:8px 12px;font-size:15px;font-weight:700;cursor:pointer;min-height:44px;}
+  .ctrl button.on{background:var(--g1);color:#fff;border-color:var(--g1);}
+  body.calm .ctrl button.on{background:#5b8f8c;border-color:#5b8f8c;}
+
+  h1.title{font-size:27px;margin:6px 0 2px;text-align:center;font-weight:900;letter-spacing:2px;}
+  .subtitle{text-align:center;color:var(--soft);font-size:15px;margin:0 0 14px;}
+
+  /* 學習地圖 */
+  .map{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);
+    padding:16px 14px;box-shadow:0 8px 22px rgba(60,90,100,.08);}
+  body.calm .map{box-shadow:none;}
+  .bar{height:14px;background:#e9eef0;border-radius:20px;overflow:hidden;margin:4px 0 16px;}
+  .bar > i{display:block;height:100%;width:0;border-radius:20px;
+    background:linear-gradient(90deg,var(--g1),var(--g2));transition:width .5s ease;}
+  body.calm .bar > i{background:#6aa9a5;transition:none;}
+  .stations{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media(max-width:520px){.stations{grid-template-columns:1fr;}}
+  .st{display:flex;align-items:center;gap:12px;border:2px solid var(--line);border-radius:18px;
+    padding:12px;background:#fbfdfd;cursor:pointer;text-align:left;transition:transform .12s;}
+  .st:not(.lock):hover{transform:translateY(-2px);}
+  body.calm .st:hover{transform:none;}
+  .st .ic{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+    font-size:26px;flex:0 0 auto;color:#fff;}
+  .st.g1 .ic{background:var(--g1);} .st.g2 .ic{background:var(--g2);}
+  .st.g3 .ic{background:var(--g3);} .st.g4 .ic{background:var(--g4);}
+  body.calm .st .ic{filter:saturate(.6);}
+  .st .tx{flex:1;min-width:0;}
+  .st .tx b{display:block;font-size:18px;font-weight:800;}
+  .st .tx small{color:var(--soft);font-size:13.5px;}
+  .st .flag{font-size:22px;flex:0 0 auto;}
+  .st.lock{opacity:.5;cursor:not-allowed;background:#f1f3f4;}
+  .st .dots{display:flex;gap:4px;margin-top:4px;}
+  .st .dots span{width:9px;height:9px;border-radius:50%;background:#dbe4e6;}
+  .st .dots span.f{background:var(--ok);}
+
+  /* 場景 */
+  .scene{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);
+    padding:16px 16px 20px;box-shadow:0 8px 22px rgba(60,90,100,.08);}
+  body.calm .scene{box-shadow:none;}
+  .sceneTop{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .sceneTop .ic{width:40px;height:40px;border-radius:12px;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;}
+  .sceneTop b{font-size:19px;font-weight:900;}
+  .back{margin-left:auto;border:2px solid var(--btnbd);background:var(--btn);border-radius:14px;
+    padding:8px 12px;font-size:15px;font-weight:700;cursor:pointer;min-height:44px;color:var(--ink);}
+  .chips{display:flex;gap:6px;margin:2px 0 12px;flex-wrap:wrap;}
+  .chip{font-size:14px;font-weight:800;padding:6px 12px;border-radius:20px;background:#eef3f4;color:var(--soft);border:2px solid transparent;}
+  .chip.cur{background:var(--focus);color:#fff;}
+  .chip.dn{background:var(--okbg);color:var(--ok);}
+
+  .guide{display:flex;gap:10px;align-items:flex-start;background:#f3faf9;border:2px solid #d5ecea;
+    border-radius:16px;padding:12px;margin-bottom:12px;}
+  body.calm .guide{background:#f3f6f6;border-color:#e0e6e6;}
+  .guide .star{font-size:30px;line-height:1;}
+  body:not(.calm) .guide .star{animation:bob 2.4s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  .guide .bub{flex:1;font-size:17.5px;font-weight:600;}
+  .sayBtn{border:none;background:#dff1ef;color:var(--g1);border-radius:12px;width:44px;height:44px;
+    font-size:20px;cursor:pointer;flex:0 0 auto;}
+  body.calm .sayBtn{background:#e7eeee;color:#5b8f8c;}
+
+  .stage{margin:6px 0 14px;display:flex;justify-content:center;}
+  .qtext{font-size:22px;font-weight:800;text-align:center;margin:6px 0 14px;}
+
+  .opts{display:grid;gap:12px;}
+  .opt{display:flex;align-items:center;gap:10px;border:3px solid var(--btnbd);background:#fbfdfd;
+    border-radius:18px;padding:16px 16px;font-size:21px;font-weight:800;cursor:pointer;min-height:60px;
+    text-align:left;color:var(--ink);width:100%;transition:transform .1s;}
+  .opt:hover{border-color:var(--focus);}
+  .opt .lab{flex:1;}
+  .opt .spk{background:transparent;border:none;font-size:20px;cursor:pointer;color:var(--soft);padding:4px;}
+  .opt.right{border-color:var(--ok);background:var(--okbg);color:var(--ok);}
+  .opt.wrong{border-color:var(--warn);background:var(--warnbg);color:var(--warn);}
+  body:not(.calm) .opt.wrong{animation:wob .4s;}
+  @keyframes wob{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .opt[disabled]{cursor:default;}
+
+  .hint{margin-top:12px;background:#fff7ec;border:2px dashed #eac489;border-radius:14px;
+    padding:12px 14px;font-size:17px;font-weight:600;color:#8a5a1c;display:none;}
+  .hint.show{display:block;}
+  .hint b{color:var(--warn);}
+
+  .go{display:block;width:100%;margin-top:16px;border:none;border-radius:18px;padding:16px;
+    font-size:21px;font-weight:900;color:#fff;background:var(--ok);cursor:pointer;min-height:62px;}
+  .go.big{background:linear-gradient(90deg,var(--g1),var(--g2));}
+  body.calm .go.big{background:#5b8f8c;}
+  .go.watch{background:var(--focus);}
+
+  .progressDots{display:flex;gap:7px;justify-content:center;margin-bottom:10px;}
+  .progressDots span{width:12px;height:12px;border-radius:50%;background:#dbe4e6;}
+  .progressDots span.cur{background:var(--focus);transform:scale(1.25);}
+  .progressDots span.f{background:var(--ok);}
+
+  /* 視覺元件 */
+  .board{border-collapse:collapse;margin:0 auto;}
+  .board th,.board td{border:2px solid #b9cdd0;text-align:center;padding:4px 0;min-width:44px;}
+  .board th{background:#eef5f6;font-size:14px;color:var(--soft);font-weight:800;line-height:1.25;}
+  .board td{font-size:26px;font-weight:900;height:52px;}
+  .board td.hi{background:#fff2c9;color:#c77a12;}
+  .board th.wan{color:var(--g2);} .board th.ge{color:var(--g1);}
+
+  .bignum{font-size:40px;font-weight:900;letter-spacing:3px;text-align:center;}
+  .bignum .wan{color:var(--g2);} .bignum .ge{color:var(--g1);}
+  .grp{font-size:13px;color:var(--soft);display:flex;justify-content:center;gap:44px;margin-top:2px;font-weight:700;}
+
+  .col{display:inline-flex;flex-direction:column;align-items:flex-end;font-weight:900;
+    font-variant-numeric:tabular-nums;font-size:30px;line-height:1.35;background:#fbfdfd;
+    border:2px solid var(--line);border-radius:14px;padding:12px 20px 12px 40px;}
+  .col .op{align-self:flex-start;margin-right:6px;}
+  .col .opp{color:var(--g4);} .col .opa{color:var(--ok);}
+  .col .rule{border-top:3px solid var(--ink);width:100%;margin-top:2px;}
+  .col .ans{color:var(--g1);}
+
+  .blocks{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:520px;}
+  .blk{border-radius:8px;color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:13px;}
+  .blk.wan{background:var(--g2);width:56px;height:40px;}
+  .blk.qian{background:var(--g1);width:30px;height:40px;font-size:11px;}
+
+  .symbig{font-size:70px;font-weight:900;text-align:center;line-height:1;}
+  .symbig.plus{color:var(--ok);} .symbig.minus{color:var(--g4);}
+  .symcap{text-align:center;color:var(--soft);font-size:15px;margin-top:4px;font-weight:700;}
+
+  .celebrate{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden;}
+  .conf{position:absolute;top:-20px;font-size:22px;animation:fall 2.2s linear forwards;}
+  @keyframes fall{to{transform:translateY(105vh) rotate(360deg);opacity:.2;}}
+
+  .foot{text-align:center;color:var(--soft);font-size:13px;margin-top:20px;line-height:1.8;}
+  .hidden{display:none !important;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;transition:none !important;}
+  }
+</style>
+
+<style id="jnav-css">
+:root{--jnav-h:94px;}
+#jiang-nav{position:sticky;top:0;z-index:99999;
+  background:linear-gradient(95deg,#0f9e99,#7b5fd0);
+  box-shadow:0 2px 12px rgba(36,59,72,.22);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Heiti TC",system-ui,sans-serif;
+  letter-spacing:.3px;}
+#jiang-nav .jn-wrap{max-width:860px;margin:0 auto;padding:7px 10px 9px;}
+#jiang-nav .jn-row{display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:nowrap;}
+#jiang-nav a,#jiang-nav span.jn-item{display:inline-flex;align-items:center;justify-content:center;gap:4px;
+  color:#fff;text-decoration:none;font-weight:800;font-size:15px;border-radius:13px;
+  padding:9px 10px;min-height:42px;white-space:nowrap;line-height:1;}
+#jiang-nav a.jn-item:hover{background:rgba(255,255,255,.2);}
+#jiang-nav .jn-home{background:rgba(255,255,255,.17);border:1.6px solid rgba(255,255,255,.55);
+  font-weight:900;padding:9px 16px;}
+#jiang-nav .jn-home:hover{background:rgba(255,255,255,.32);}
+#jiang-nav .jn-disabled{opacity:.42;cursor:not-allowed;}
+#jiang-nav .jn-sep{color:rgba(255,255,255,.55);font-weight:700;padding:0 1px;}
+#jiang-nav .jn-switch{display:flex;align-items:center;justify-content:center;gap:7px;
+  flex-wrap:wrap;margin-top:7px;}
+#jiang-nav .jn-tag{color:rgba(255,255,255,.92);font-size:13px;font-weight:800;margin-right:2px;}
+#jiang-nav .jn-pill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;
+  padding:6px 13px;font-size:14px;font-weight:800;min-height:38px;border:1.6px solid rgba(255,255,255,.5);
+  color:#fff;text-decoration:none;background:transparent;line-height:1;}
+#jiang-nav a.jn-pill:hover{background:rgba(255,255,255,.2);}
+#jiang-nav .jn-pill.cur{background:#fff;color:#0f6f6b;border-color:#fff;}
+@media (max-width:430px){
+  #jiang-nav a,#jiang-nav span.jn-item{font-size:13.5px;padding:8px 7px;}
+  #jiang-nav .jn-home{padding:8px 11px;}
+  #jiang-nav .jn-pill{font-size:12.5px;padding:5px 10px;}
+}
+@media print{ #jiang-nav{display:none !important;} }
+</style>
+
+</head>
+<body>
+<nav id="jiang-nav"><div class="jn-wrap"><div class="jn-row"><span class="jn-item jn-disabled" aria-disabled="true">◀ 上一單元</span><span class="jn-sep">｜</span><a class="jn-item jn-home" href="index.html">🏠 總目錄</a><span class="jn-sep">｜</span><a class="jn-item" href="unit02-teach.html" title="第 2 單元 整數的乘法">下一單元 ▶</a></div><div class="jn-switch"><span class="jn-tag">第 1 單元《一億以內的數》</span><span class="jn-pill cur">🎮 互動教學</span><a class="jn-pill" href="unit01-quiz.html">📝 形成性評量</a></div></div></nav>
+<div class="wrap">
+
+  <div class="brand">
+    <span class="dot">江</span><b>江 JIANG ・ 跟林老師學數學</b>
+  </div>
+
+  <div class="ctrl">
+    <button id="btnCalm" data-act="calm">🌙 減敏模式</button>
+    <button id="btnSpeak" class="on" data-act="speak">🔊 朗讀：開</button>
+    <button data-act="restart">↺ 重新開始</button>
+  </div>
+
+  <h1 class="title">《一億以內的數》大探險</h1>
+  <p class="subtitle">四年級數學・第一單元　點一點就能自己學</p>
+
+  <div id="app"></div>
+
+  <div class="foot">
+    做完一關會蓋一個勾勾。做到哪裡都會自動存起來，下次打開接著玩。<br>
+    看不懂字沒關係，按 🔊 我唸給你聽。
+  </div>
+</div>
+
+<div id="celebrate" class="celebrate hidden"></div>
+
+<script>
+"use strict";
+
+/* ============ 內容資料（資料驅動） ============ */
+const V = {
+  board(pairs, hiName){ // pairs 為 [名 數字] 陣列 由高位到低位
+    let head="", row="";
+    pairs.forEach(p=>{
+      const cls = p[0].indexOf("萬")>=0 ? "wan" : "ge";
+      head += `<th class="${cls}">${p[0].split("").join("<br>")}<br>位</th>`;
+      row  += `<td class="${p[0]===hiName?"hi":""}">${p[1]}</td>`;
+    });
+    return `<table class="board"><tr>${head}</tr><tr>${row}</tr></table>`;
+  },
+  big(wan, ge){ // 萬組字串 個組字串
+    return `<div><div class="bignum"><span class="wan">${wan}</span><span class="ge">${ge}</span></div>`+
+           `<div class="grp"><span style="color:var(--g2)">萬組</span><span style="color:var(--g1)">個組</span></div></div>`;
+  },
+  col(a,b,op,ans){
+    const cls = op==="＋"?"opa":"opp";
+    return `<div class="col"><span>${a}</span>`+
+           `<span><span class="op ${cls}">${op}</span>${b}</span>`+
+           `<span class="rule"></span><span class="ans">${ans}</span></div>`;
+  },
+  sym(op){
+    const plus = op==="＋";
+    return `<div><div class="symbig ${plus?"plus":"minus"}">${op}</div>`+
+           `<div class="symcap">${plus?"加　合起來　共　多":"減　剩下　少　差"}</div></div>`;
+  },
+  blocks10(){
+    let h=""; for(let i=0;i<10;i++) h+=`<div class="blk qian">1萬</div>`;
+    return `<div><div class="blocks">${h}</div>`+
+           `<div class="grp"><span>10 個一萬</span></div></div>`;
+  }
+};
+
+const SCENES = [
+  /* ===== 關 1 ===== */
+  { id:1, icon:"🧱", title:"數字積木王國", cls:"g1", sub:"認識位子（位值）",
+    layers:[
+      { kind:"watch", label:"我看",
+        steps:[
+          { say:"一萬要寫五個位子，是五位數。十萬要寫六個位子，是六位數。",
+            html: V.board([["萬","1"],["千","0"],["百","0"],["十","0"],["個","0"]]) },
+          { say:"十個一萬合起來，就是十萬。",
+            html: V.blocks10() },
+          { say:"這叫定位板。從右邊數過來是：個位、十位、百位、千位、萬位、十萬位。",
+            html: V.board([["十萬",""],["萬",""],["千",""],["百",""],["十",""],["個",""]]) }
+        ]},
+      { kind:"quiz", label:"我懂",
+        items:[
+          { say:"把六萬七千九百九十六放到定位板上。它的萬位是幾？",
+            html: V.board([["萬","6"],["千","7"],["百","9"],["十","9"],["個","6"]],"萬"),
+            q:"它的萬位是幾？", choices:[["6","六"],["7","七"],["9","九"]], ans:0,
+            hint:"萬位是最左邊那一格，黃色的那格是 6。" },
+          { say:"同一個數，它的個位是幾？",
+            html: V.board([["萬","6"],["千","7"],["百","9"],["十","9"],["個","6"]],"個"),
+            q:"它的個位是幾？", choices:[["9","九"],["6","六"],["7","七"]], ans:1,
+            hint:"個位是最右邊那一格，黃色的那格是 6。" }
+        ]},
+      { kind:"quiz", label:"我做",
+        items:[
+          { say:"一個五位數，個位 1、十位 7、百位 6、千位 2、萬位 3。它是多少？",
+            html: V.board([["萬","3"],["千","2"],["百","6"],["十","7"],["個","1"]]),
+            q:"這個五位數是多少？", choices:[["32671","三萬二千六百七十一"],["12673","一萬二千六百七十三"],["37621","三萬七千六百二十一"]], ans:0,
+            hint:"照定位板由左到右讀出來：3、2、6、7、1，就是 32671。" },
+          { say:"71046 是由 7 個萬、1 個千、幾個百、4 個十、6 個一合起來的？",
+            html: V.board([["萬","7"],["千","1"],["百","?"],["十","4"],["個","6"]],"百"),
+            q:"百位是幾個？", choices:[["0","0 個"],["1","1 個"],["4","4 個"]], ans:0,
+            hint:"71046 的百位那格空空的，沒有東西就是 0。" }
+        ]},
+      { kind:"quiz", label:"我會",
+        items:[
+          { say:"5 個萬、7 個千、8 個百、9 個十、3 個一，合起來是多少？",
+            html: V.board([["萬","5"],["千","7"],["百","8"],["十","9"],["個","3"]]),
+            q:"合起來是多少？", choices:[["57893","五萬七千八百九十三"],["58793","五萬八千七百九十三"],["50789","五萬零七百八十九"]], ans:0,
+            hint:"由高位排到低位：5、7、8、9、3，就是 57893。" },
+          { say:"想一想。三百萬寫成 3000000，它是幾位數？",
+            html: `<div class="bignum"><span class="wan">300</span><span class="ge">0000</span></div>`,
+            q:"三百萬是幾位數？", choices:[["6","六位數"],["7","七位數"],["8","八位數"]], ans:1,
+            hint:"數數看 3000000 有幾個數字，一共 7 個，所以是七位數。" },
+          { say:"再想一想。五千萬寫成 50000000，它是幾位數？",
+            html: `<div class="bignum"><span class="wan">5000</span><span class="ge">0000</span></div>`,
+            q:"五千萬是幾位數？", choices:[["7","七位數"],["8","八位數"],["9","九位數"]], ans:1,
+            hint:"數數看 50000000 有 8 個數字，所以是八位數。" }
+        ]}
+    ]},
+
+  /* ===== 關 2 ===== */
+  { id:2, icon:"🗣️", title:"讀出大數字", cls:"g2", sub:"大數的讀法",
+    layers:[
+      { kind:"watch", label:"我看",
+        steps:[
+          { say:"讀大數字有祕訣。從右邊每四個數字分成一組。前面是萬組，後面是個組。",
+            html: V.big("5007","0008") },
+          { say:"每一組中間連續幾個 0，只要讀一個零。50070008 讀作：五千零七萬零八。",
+            html: V.big("5007","0008") },
+          { say:"每一組後面的 0 都不用讀。80009500 讀作：八千萬九千五百。",
+            html: V.big("8000","9500") }
+        ]},
+      { kind:"quiz", label:"我懂",
+        items:[
+          { say:"67996 怎麼讀？聽聽看，選出對的。",
+            html: `<div class="bignum"><span class="ge">67996</span></div>`,
+            q:"67996 怎麼讀？", choices:[["六萬七千九百九十六",""],["六千七百九十九",""],["六萬七千九百六十九",""]], ans:0,
+            hint:"6 在萬位，唸六萬。後面是七千九百九十六。" },
+          { say:"64300910 怎麼讀？分成 6430 萬和 0910。",
+            html: V.big("6430","0910"),
+            q:"64300910 怎麼讀？", choices:[["六千四百三十萬零九百一十",""],["六千四百三十萬九百一",""],["六千四百三十萬零九十一",""]], ans:0,
+            hint:"萬組讀六千四百三十萬。個組 0910 中間有 0 讀一個零，是零九百一十。" }
+        ]},
+      { kind:"quiz", label:"我做",
+        items:[
+          { say:"判斷看看。2000000 讀作二千萬，對不對？",
+            html: `<div class="bignum"><span class="ge">2000000</span></div>`,
+            q:"讀作二千萬，對嗎？", choices:[["對","○ 對"],["不對","✕ 不對"]], ans:1,
+            hint:"2000000 只有 7 位，是二百萬，不是二千萬（二千萬要 8 位）。" },
+          { say:"再判斷。4000350 讀作四百萬零三百五十，對不對？",
+            html: V.big("400","0350"),
+            q:"這樣讀對嗎？", choices:[["對","○ 對"],["不對","✕ 不對"]], ans:0,
+            hint:"400 萬讀四百萬，0350 中間有 0 讀零三百五十，合起來完全正確。" }
+        ]},
+      { kind:"quiz", label:"我會",
+        items:[
+          { say:"把八千三百五十一萬七千五百四十九寫成數字，選出對的。",
+            html: `<div class="qtext" style="font-size:19px">八千三百五十一萬・七千五百四十九</div>`,
+            q:"寫成數字是？", choices:[["83517549",""],["8351749",""],["835107549",""]], ans:0,
+            hint:"萬組八千三百五十一是 8351，個組七千五百四十九是 7549，接起來 83517549。" },
+          { say:"把四千一百二十萬九千三百八十八寫成數字，選出對的。",
+            html: `<div class="qtext" style="font-size:19px">四千一百二十萬・九千三百八十八</div>`,
+            q:"寫成數字是？", choices:[["41209388",""],["412009388",""],["4120938",""]], ans:0,
+            hint:"萬組四千一百二十是 4120，個組九千三百八十八是 9388，接起來 41209388。" },
+          { say:"想一想。最大的八位數是多少？",
+            html: `<div class="qtext">□□□□□□□□</div>`,
+            q:"最大的八位數是？", choices:[["99999999",""],["10000000",""],["88888888",""]], ans:0,
+            hint:"八個位子每一格都放最大的 9，就是 99999999。" }
+        ]}
+    ]},
+
+  /* ===== 關 3 ===== */
+  { id:3, icon:"⚖️", title:"數字比大小", cls:"g3", sub:"數的大小比較",
+    layers:[
+      { kind:"watch", label:"我看",
+        steps:[
+          { say:"比大小第一招。先數位數，位子比較多的數就比較大。",
+            html:`<div style="text-align:center"><span class="bignum" style="font-size:28px">8147605</span>
+                  <div class="symcap">七位數</div><div style="font-size:24px;margin:6px 0;color:var(--g3);font-weight:900">大於 ＞</div>
+                  <span class="bignum" style="font-size:28px">980601</span><div class="symcap">六位數</div></div>` },
+          { say:"位數一樣多的時候，就從最左邊，也就是最高位，一位一位往右比。",
+            html: V.board([["千萬","6"],["百萬","8"],["十萬","2"],["萬","5"],["千","1"],["百","9"],["十","7"],["個","4"]],"百萬") },
+          { say:"上面這個數，千萬位都一樣，比到百萬位 8 比 2 大，所以它比較大。",
+            html:`<div class="symcap" style="font-size:17px">8 比 2 大 → 上面的數比較大</div>` }
+        ]},
+      { kind:"quiz", label:"我懂",
+        items:[
+          { say:"131120 和 97500，誰比較大？",
+            html:`<div style="text-align:center"><span class="bignum" style="font-size:26px">131120</span>
+                  <span style="font-size:22px;margin:0 14px;color:var(--soft)">和</span>
+                  <span class="bignum" style="font-size:26px">97500</span></div>`,
+            q:"誰比較大？", choices:[["131120","131120（六位）"],["97500","97500（五位）"]], ans:0,
+            hint:"131120 是六位數，97500 是五位數，位子多的比較大。" },
+          { say:"990000 和 10000001，誰比較大？",
+            html:`<div style="text-align:center"><span class="bignum" style="font-size:24px">990000</span>
+                  <span style="font-size:22px;margin:0 14px;color:var(--soft)">和</span>
+                  <span class="bignum" style="font-size:24px">10000001</span></div>`,
+            q:"誰比較大？", choices:[["10000001","10000001（八位）"],["990000","990000（六位）"]], ans:0,
+            hint:"數數看：990000 是六位，10000001 是八位，位子多的比較大。" }
+        ]},
+      { kind:"quiz", label:"我做",
+        items:[
+          { say:"在中間填符號。14208 和 14009，該填大於、小於還是等於？",
+            html:`<div style="text-align:center"><span class="bignum" style="font-size:26px">14208</span>
+                  <span style="font-size:34px;margin:0 12px">□</span>
+                  <span class="bignum" style="font-size:26px">14009</span></div>`,
+            q:"填哪一個？", choices:[["＞","＞ 大於"],["＜","＜ 小於"],["＝","＝ 等於"]], ans:0,
+            hint:"位數一樣，從左比：萬千百都同，比到十位 2 比 0 大，左邊大，填 ＞。" },
+          { say:"2341009 和 2342000，該填什麼？",
+            html:`<div style="text-align:center"><span class="bignum" style="font-size:24px">2341009</span>
+                  <span style="font-size:34px;margin:0 12px">□</span>
+                  <span class="bignum" style="font-size:24px">2342000</span></div>`,
+            q:"填哪一個？", choices:[["＜","＜ 小於"],["＞","＞ 大於"],["＝","＝ 等於"]], ans:0,
+            hint:"從左比，前面都同，比到千位 1 比 2 小，左邊小，填 ＜。" }
+        ]},
+      { kind:"quiz", label:"我會",
+        items:[
+          { say:"12434321 和 12344321，該填什麼？",
+            html:`<div style="text-align:center"><span class="bignum" style="font-size:22px">12434321</span>
+                  <span style="font-size:34px;margin:0 12px">□</span>
+                  <span class="bignum" style="font-size:22px">12344321</span></div>`,
+            q:"填哪一個？", choices:[["＞","＞ 大於"],["＜","＜ 小於"],["＝","＝ 等於"]], ans:0,
+            hint:"從左比，前兩位都是 1、2，比到第三位 4 比 3 大，左邊大，填 ＞。" },
+          { say:"最難的一題，慢慢想。中間的□可以是 0 到 9 任何一個數字。294□4500 和 29376000 比，填什麼？",
+            html:`<div style="text-align:center"><span class="bignum" style="font-size:22px">294<span style="color:var(--g4)">□</span>4500</span>
+                  <span style="font-size:34px;margin:0 12px">□</span>
+                  <span class="bignum" style="font-size:22px">29376000</span></div>`,
+            q:"該填哪一個？", choices:[["＞","＞ 大於"],["＜","＜ 小於"],["不一定","要看□"]], ans:0,
+            hint:"兩邊都是八位。從左比：2 同、9 同、比到第三位 4 比 3 大就分出來了，跟□是幾沒關係，左邊一定大，填 ＞。" }
+        ]}
+    ]},
+
+  /* ===== 關 4 ===== */
+  { id:4, icon:"➕", title:"大數加加減減", cls:"g4", sub:"大數的加減",
+    layers:[
+      { kind:"watch", label:"我看",
+        steps:[
+          { say:"先認符號。加號是合起來、共、多。減號是剩下、少、差。看到符號就知道要做什麼。",
+            html:`<div style="display:flex;gap:30px;justify-content:center">${V.sym("＋")}${V.sym("－")}</div>` },
+          { say:"用直式算，要對整齊，從個位開始算。7230000 加 970000 等於 8200000。",
+            html: V.col("7230000","970000","＋","8200000") },
+          { say:"位數很多的時候，可以用萬來算比較快。723 萬加 97 萬等於 820 萬。",
+            html: V.col("723萬","97萬","＋","820萬") }
+        ]},
+      { kind:"quiz", label:"我懂",
+        items:[
+          { say:"先認符號。這一題 28 萬加 53 萬，是要加還是要減？",
+            html: V.sym("＋"),
+            q:"這一題是？", choices:[["加","加（合起來）"],["減","減（剩下）"]], ans:0,
+            hint:"看到綠色的加號 ＋，就是合起來，要用加。" },
+          { say:"這一題 752 萬減 341 萬，是要加還是要減？",
+            html: V.sym("－"),
+            q:"這一題是？", choices:[["減","減（剩下）"],["加","加（合起來）"]], ans:0,
+            hint:"看到粉色的減號 －，就是剩下，要用減。" }
+        ]},
+      { kind:"quiz", label:"我做",
+        items:[
+          { say:"算算看。156 萬加 34 萬等於多少？",
+            html: V.col("156萬","34萬","＋","？"),
+            q:"156 萬 ＋ 34 萬 ＝？", choices:[["190萬","190 萬"],["122萬","122 萬"],["180萬","180 萬"]], ans:0,
+            hint:"156 加 34，個位 6 加 4 是 10，進位。答案是 190 萬。" },
+          { say:"算算看。752 萬減 341 萬等於多少？",
+            html: V.col("752萬","341萬","－","？"),
+            q:"752 萬 － 341 萬 ＝？", choices:[["411萬","411 萬"],["413萬","413 萬"],["401萬","401 萬"]], ans:0,
+            hint:"752 減 341，個位 2 減 1 是 1，十位 5 減 4 是 1，百位 7 減 3 是 4。答案 411 萬。" }
+        ]},
+      { kind:"quiz", label:"我會",
+        items:[
+          { say:"讀讀看。陳太太買兩幅油畫，一幅 28 萬，另一幅 53 萬，一共花幾萬？",
+            html:`<div class="qtext" style="font-size:18px">一共 → 合起來 → 用加<br>28 萬 ＋ 53 萬 ＝ ？</div>`,
+            q:"一共花幾萬？", choices:[["81萬","81 萬"],["25萬","25 萬"],["83萬","83 萬"]], ans:0,
+            hint:"一共就是合起來，用加。28 加 53 等於 81 萬。" },
+          { say:"讀讀看。募款上星期募得 6 萬 5573 元，這星期募得 5 萬 2600 元，兩星期共募多少元？",
+            html:`<div class="qtext" style="font-size:18px">共 → 用加<br>65573 ＋ 52600 ＝ ？</div>`,
+            q:"兩星期共募多少元？", choices:[["118173","118173 元"],["113173","113173 元"],["117163","117163 元"]], ans:0,
+            hint:"65573 加 52600。個位 3 加 0 是 3，答案 118173 元，也就是 11 萬 8173 元。" },
+          { say:"想一想。甲國上個月出口約 570000 公斤小麥，這個月約 420000 公斤，這個月比上個月多出口幾公斤？",
+            html:`<div class="qtext" style="font-size:18px">比多少 → 相差 → 用減<br>570000 － 420000 ＝ ？</div>`,
+            q:"這個月比上個月多幾公斤？", choices:[["150000","150000 公斤"],["990000","990000 公斤"],["130000","130000 公斤"]], ans:0,
+            hint:"比多少就是相差，用減。570000 減 420000 等於 150000 公斤，也就是 15 萬公斤。" }
+        ]}
+    ]}
+];
+
+/* ============ 狀態與存檔 ============ */
+const KEY = "sped_math_yiyiyinei_v1";
+let prog = { guan:[0,0,0,0], calm:false, speak:true };
+try{ const s=localStorage.getItem(KEY); if(s) prog=Object.assign(prog, JSON.parse(s)); }catch(e){}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(prog)); }catch(e){} }
+
+let view = "map";
+let gi=0, li=0, ii=0;   // 關 index, 層 index, 題/步 index
+let answered=false;
+
+const app = document.getElementById("app");
+
+/* ============ 語音 ============ */
+let voiceReady=false, zhVoice=null;
+function pickVoice(){
+  const vs = window.speechSynthesis ? speechSynthesis.getVoices() : [];
+  zhVoice = vs.find(v=>/zh[-_]TW/i.test(v.lang)) || vs.find(v=>/zh/i.test(v.lang)) || null;
+  voiceReady = vs.length>0;
+}
+if(window.speechSynthesis){
+  pickVoice();
+  speechSynthesis.onvoiceschanged = pickVoice;
+}
+function speak(t){
+  if(!prog.speak || !t || !window.speechSynthesis) return;
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(String(t).replace(/[＋]/g,"加").replace(/[－]/g,"減").replace(/＞/g,"大於").replace(/＜/g,"小於").replace(/＝/g,"等於").replace(/○/g,"對").replace(/✕/g,"不對").replace(/□/g,""));
+    u.lang="zh-TW"; u.rate=.92; u.pitch=1.02;
+    if(zhVoice) u.voice=zhVoice;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function stopSpeak(){ if(window.speechSynthesis) try{speechSynthesis.cancel();}catch(e){} }
+
+/* ============ 慶祝 ============ */
+function party(){
+  if(prog.calm) return;
+  const box=document.getElementById("celebrate");
+  box.classList.remove("hidden"); box.innerHTML="";
+  const em=["⭐","🎉","✨","🌟","💫"];
+  for(let i=0;i<24;i++){
+    const s=document.createElement("div");
+    s.className="conf"; s.textContent=em[i%em.length];
+    s.style.left=(Math.random()*100)+"%";
+    s.style.animationDelay=(Math.random()*.5)+"s";
+    s.style.fontSize=(18+Math.random()*16)+"px";
+    box.appendChild(s);
+  }
+  setTimeout(()=>{box.classList.add("hidden");box.innerHTML="";},2400);
+}
+
+/* ============ 畫面 ============ */
+function totalLayers(){ return SCENES.length*4; }
+function doneLayers(){ return prog.guan.reduce((a,b)=>a+b,0); }
+function guanUnlocked(g){ return g===0 || prog.guan[g-1]>=4; }
+
+function render(){
+  if(view==="map") renderMap(); else renderScene();
+  updateCtrl();
+}
+
+function updateCtrl(){
+  document.body.classList.toggle("calm", prog.calm);
+  document.getElementById("btnCalm").classList.toggle("on", prog.calm);
+  const bs=document.getElementById("btnSpeak");
+  bs.classList.toggle("on", prog.speak);
+  bs.textContent = prog.speak ? "🔊 朗讀：開" : "🔇 朗讀：關";
+}
+
+function renderMap(){
+  const pct = Math.round(doneLayers()/totalLayers()*100);
+  let sts="";
+  SCENES.forEach((s,g)=>{
+    const lock=!guanUnlocked(g);
+    const done=prog.guan[g]>=4;
+    let dots=""; for(let k=0;k<4;k++) dots+=`<span class="${k<prog.guan[g]?"f":""}"></span>`;
+    sts += `<button class="st ${s.cls} ${lock?"lock":""}" data-act="${lock?"":"open"}" data-g="${g}">
+      <span class="ic">${lock?"🔒":s.icon}</span>
+      <span class="tx"><b>第 ${s.id} 關　${s.title}</b><small>${s.sub}</small>
+        <span class="dots">${dots}</span></span>
+      <span class="flag">${done?"✅":(lock?"":"▶")}</span>
+    </button>`;
+  });
+  app.innerHTML = `
+    <div class="map">
+      <div class="bar"><i style="width:${pct}%"></i></div>
+      <div class="guide">
+        <span class="star">⭐</span>
+        <div class="bub">${doneLayers()===0?"哈囉，我是林老師！點下面亮亮的關卡，我們一起出發吧。":
+          (pct===100?"全部通關了，你太厲害了！可以隨時回來複習。":"做得好！接著點亮亮的關卡繼續喔。")}</div>
+        <button class="sayBtn" data-act="say" data-text="哈囉，我是林老師，點亮亮的關卡，我們一起出發吧。">🔊</button>
+      </div>
+      <div class="stations">${sts}</div>
+    </div>`;
+}
+
+function renderScene(){
+  const s=SCENES[gi], layer=s.layers[li];
+  // 層標籤
+  let chips="";
+  s.layers.forEach((L,k)=>{
+    const cls = k<prog.guan[gi]?"dn":(k===li?"cur":"");
+    chips+=`<span class="chip ${cls}">${L.label}${k<prog.guan[gi]?" ✓":""}</span>`;
+  });
+
+  let body="";
+  if(layer.kind==="watch"){
+    const st=layer.steps[ii], last=ii===layer.steps.length-1;
+    body = `
+      <div class="guide"><span class="star">⭐</span><div class="bub">${st.say}</div>
+        <button class="sayBtn" data-act="say" data-text="${esc(st.say)}">🔊</button></div>
+      <div class="stage">${st.html}</div>
+      ${last
+        ? `<button class="go watch" data-act="watchdone">我看懂了，往下 ▶</button>`
+        : `<button class="go watch" data-act="watchnext">繼續看 ▶</button>`}`;
+  } else {
+    const it=layer.items[ii];
+    let dots=""; layer.items.forEach((_,k)=> dots+=`<span class="${k<ii?"f":(k===ii?"cur":"")}"></span>`);
+    let opts="";
+    it.choices.forEach((c,k)=>{
+      const lab = c[1] ? c[1] : c[0];
+      opts += `<button class="opt" data-act="ans" data-k="${k}">
+        <span class="lab">${lab}</span>
+        <button class="spk" data-act="say" data-text="${esc(lab)}">🔊</button></button>`;
+    });
+    body = `
+      <div class="progressDots">${dots}</div>
+      <div class="guide"><span class="star">⭐</span><div class="bub">${it.say}</div>
+        <button class="sayBtn" data-act="say" data-text="${esc(it.say)}">🔊</button></div>
+      <div class="stage">${it.html}</div>
+      <div class="qtext">${it.q}</div>
+      <div class="opts">${opts}</div>
+      <div class="hint" id="hintBox"><b>小提示：</b>${it.hint}</div>
+      <button class="go big hidden" id="nextBtn" data-act="next">做對了，繼續 ▶</button>`;
+  }
+
+  app.innerHTML = `
+    <div class="scene">
+      <div class="sceneTop">
+        <span class="ic" style="background:var(--${s.cls==='g1'?'g1':s.cls==='g2'?'g2':s.cls==='g3'?'g3':'g4'})">${s.icon}</span>
+        <b>第 ${s.id} 關　${s.title}</b>
+        <button class="back" data-act="map">🗺️ 地圖</button>
+      </div>
+      <div class="chips">${chips}</div>
+      ${body}
+    </div>`;
+
+  answered=false;
+  const sayText = layer.kind==="watch" ? layer.steps[ii].say : layer.items[ii].say;
+  setTimeout(()=>speak(sayText), 260);
+}
+
+function esc(t){ return String(t).replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
+
+/* ============ 互動 ============ */
+function openGuan(g){
+  gi=g; li=Math.min(prog.guan[g],3); ii=0; view="scene"; render();
+}
+function completeLayer(){
+  if(prog.guan[gi] < li+1){ prog.guan[gi]=li+1; save(); }
+  if(li>=3){                       // 整關完成
+    stopSpeak(); party();
+    setTimeout(()=>speak("這一關全部完成，你好棒！"), 200);
+    view="map"; render();
+  }else{
+    li+=1; ii=0; render();
+  }
+}
+function onAnswer(k){
+  const layer=SCENES[gi].layers[li], it=layer.items[ii];
+  const btns=[...app.querySelectorAll(".opt")];
+  const target=btns[k];
+  if(answered) return;
+  if(k===it.ans){
+    answered=true;
+    target.classList.add("right");
+    target.querySelector(".lab").insertAdjacentHTML("beforeend"," ⭐");
+    btns.forEach(b=>b.setAttribute("disabled","1"));
+    const praise=["答對了，你好棒！","太厲害了，就是這樣！","你自己想出來了！","完全正確！"][Math.floor(Math.random()*4)];
+    stopSpeak(); setTimeout(()=>speak(praise),120);
+    const nb=document.getElementById("nextBtn");
+    nb.classList.remove("hidden");
+    nb.textContent = (ii>=layer.items.length-1) ? "這一層完成 ▶" : "做對了，繼續 ▶";
+  }else{
+    target.classList.add("wrong");
+    setTimeout(()=>target.classList.remove("wrong"),600);
+    const hb=document.getElementById("hintBox");
+    hb.classList.add("show");
+    stopSpeak(); setTimeout(()=>speak("沒關係，再想一想。"+it.hint),120);
+    setTimeout(()=>{ target.classList.remove("wrong"); }, 700);
+  }
+}
+function nextItem(){
+  const layer=SCENES[gi].layers[li];
+  if(ii>=layer.items.length-1){ completeLayer(); }
+  else { ii+=1; render(); }
+}
+
+/* ============ 事件委派 ============ */
+document.body.addEventListener("click", (e)=>{
+  const b=e.target.closest("[data-act]");
+  if(!b) return;
+  const act=b.dataset.act;
+  if(act==="say"){ e.stopPropagation(); speak(b.dataset.text); return; }
+  if(act==="calm"){ prog.calm=!prog.calm; save(); render(); return; }
+  if(act==="speak"){ prog.speak=!prog.speak; save(); if(!prog.speak) stopSpeak(); updateCtrl(); return; }
+  if(act==="restart"){
+    if(confirm("要把進度全部清掉，從第一關重新開始嗎？")){
+      prog.guan=[0,0,0,0]; save(); view="map"; stopSpeak(); render();
+    } return;
+  }
+  if(act==="open"){ openGuan(parseInt(b.dataset.g,10)); return; }
+  if(act==="map"){ view="map"; stopSpeak(); render(); return; }
+  if(act==="watchnext"){ ii+=1; render(); return; }
+  if(act==="watchdone"){ completeLayer(); return; }
+  if(act==="ans"){ onAnswer(parseInt(b.dataset.k,10)); return; }
+  if(act==="next"){ nextItem(); return; }
+});
+
+render();
+</script>
+
+<script>
+(function(){
+  function fit(){
+    var nav=document.getElementById('jiang-nav'); if(!nav) return;
+    var h=nav.offsetHeight||0;
+    document.documentElement.style.setProperty('--jnav-h', h+'px');
+    try{ document.documentElement.style.scrollPaddingTop=h+'px'; }catch(e){}
+    var tb=document.querySelector('.toolbar'); /* 評量頁既有列印工具列 */
+    if(tb){ tb.style.top=h+'px'; }
+  }
+  if(document.readyState!=='loading') fit(); else document.addEventListener('DOMContentLoaded',fit);
+  window.addEventListener('load',fit); window.addEventListener('resize',fit);
+})();
+</script>
+
+</body>
+</html>

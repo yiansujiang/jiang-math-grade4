@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>四年級數學大探險 · 全冊總目錄</title>
+<style>
+  :root{
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    --bg1:#eaf6f6; --bg2:#f6efe6; --ink:#243b48; --soft:#5b6f7a;
+    --card:#ffffff; --line:#d7e3e6;
+    --g1:#0f9e99; --g2:#7b5fd0; --g3:#e0912f; --g4:#e0658a;
+    --ok:#2f9e6f; --okbg:#e5f6ee;
+    --fs:20px; --radius:24px;
+  }
+  *{box-sizing:inherit;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Heiti TC",system-ui,sans-serif;
+    color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;font-size:var(--fs);line-height:1.7;letter-spacing:.3px;
+    -webkit-text-size-adjust:100%;
+    overflow-x:hidden;
+  }
+  body.calm{background:#f4f6f6;}
+
+  /* 沉浸式背景裝飾 */
+  .deco{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .deco b{position:absolute;border-radius:50%;filter:blur(2px);opacity:.5;}
+  .deco b.a{width:320px;height:320px;top:-120px;right:-90px;background:radial-gradient(circle at 35% 35%,#aee6e2,transparent 70%);}
+  .deco b.b{width:300px;height:300px;bottom:-110px;left:-90px;background:radial-gradient(circle at 40% 40%,#d8caf4,transparent 70%);}
+  .deco b.c{width:220px;height:220px;top:38%;left:-80px;background:radial-gradient(circle at 40% 40%,#f6d9b0,transparent 70%);}
+  .deco s{position:absolute;font-size:22px;opacity:.5;animation:floaty 7s ease-in-out infinite;}
+  body.calm .deco{display:none;}
+  @keyframes floaty{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-16px) rotate(10deg)}}
+
+  .wrap{max-width:900px;margin:0 auto;padding:16px 16px 70px;position:relative;z-index:1;}
+
+  .brand{display:flex;align-items:center;gap:10px;padding:4px 2px;}
+  .brand .dot{width:40px;height:40px;border-radius:50%;
+    background:radial-gradient(circle at 32% 30%,#8fd6d2,var(--g1));
+    display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:19px;
+    box-shadow:0 3px 8px rgba(15,158,153,.4);}
+  body.calm .brand .dot{background:#7fb3b0;box-shadow:none;}
+  .brand b{font-size:15px;color:var(--soft);font-weight:800;letter-spacing:1px;}
+  .ctrl{margin-left:auto;display:flex;gap:8px;}
+  .ctrl button{border:2px solid #bfd7da;background:#f2f8f8;color:var(--ink);border-radius:14px;
+    padding:8px 12px;font-size:14px;font-weight:800;cursor:pointer;min-height:44px;}
+  .ctrl button.on{background:var(--g1);color:#fff;border-color:var(--g1);}
+  body.calm .ctrl button.on{background:#5b8f8c;border-color:#5b8f8c;}
+
+  /* Hero */
+  .hero{margin:14px 0 18px;text-align:center;}
+  .hero h1{font-size:clamp(28px,7vw,42px);margin:4px 0 6px;font-weight:900;letter-spacing:3px;
+    background:linear-gradient(90deg,var(--g1),var(--g2),var(--g3));
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  body.calm .hero h1{background:none;-webkit-text-fill-color:initial;color:#3a5560;}
+  .hero p{margin:0;color:var(--soft);font-size:15.5px;font-weight:700;}
+  .hero .pill{display:inline-block;margin-top:10px;background:#fff;border:2px solid var(--line);
+    border-radius:999px;padding:6px 16px;font-size:14px;font-weight:800;color:var(--g1);
+    box-shadow:0 6px 16px rgba(60,90,100,.08);}
+
+  /* 林老師引導 + 整體進度 */
+  .panel{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);
+    padding:16px 16px;box-shadow:0 10px 26px rgba(60,90,100,.1);margin-bottom:16px;
+    display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
+  body.calm .panel{box-shadow:none;}
+  .guide{display:flex;gap:12px;align-items:center;flex:1;min-width:220px;}
+  .guide .star{font-size:40px;line-height:1;}
+  body:not(.calm) .guide .star{animation:bob 2.6s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .guide .bub{font-size:16.5px;font-weight:700;}
+  .guide .bub small{display:block;color:var(--soft);font-size:13.5px;font-weight:600;margin-top:2px;}
+
+  .ring{display:flex;flex-direction:column;align-items:center;gap:4px;flex:0 0 auto;}
+  .ring svg{width:108px;height:108px;transform:rotate(-90deg);}
+  .ring .rt{fill:none;stroke:#e9eef0;stroke-width:12;}
+  .ring .rf{fill:none;stroke:url(#rg);stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset .7s ease;}
+  body.calm .ring .rf{stroke:#6aa9a5;}
+  .ring .rc{font-size:13px;color:var(--soft);font-weight:800;}
+  .ring .rp{position:relative;}
+  .ring .rp b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:24px;font-weight:900;color:var(--g1);}
+  body.calm .ring .rp b{color:#5b8f8c;}
+
+  /* 單元卡片 */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:620px){.grid{grid-template-columns:1fr;}}
+  .ucard{background:var(--card);border:2px solid var(--line);border-radius:22px;
+    padding:15px 15px 16px;box-shadow:0 8px 22px rgba(60,90,100,.09);
+    position:relative;overflow:hidden;transition:transform .14s,box-shadow .14s;}
+  .ucard:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(60,90,100,.16);}
+  body.calm .ucard{box-shadow:none;} body.calm .ucard:hover{transform:none;}
+  .ucard::before{content:"";position:absolute;top:0;left:0;right:0;height:6px;}
+  .ucard.g1::before{background:var(--g1);} .ucard.g2::before{background:var(--g2);}
+  .ucard.g3::before{background:var(--g3);} .ucard.g4::before{background:var(--g4);}
+  .utop{display:flex;align-items:center;gap:12px;margin-top:4px;}
+  .unum{flex:0 0 auto;width:34px;height:34px;border-radius:11px;display:flex;align-items:center;
+    justify-content:center;font-size:16px;font-weight:900;color:#fff;}
+  .ucard.g1 .unum{background:var(--g1);} .ucard.g2 .unum{background:var(--g2);}
+  .ucard.g3 .unum{background:var(--g3);} .ucard.g4 .unum{background:var(--g4);}
+  .uicon{font-size:30px;flex:0 0 auto;}
+  .uinfo{flex:1;min-width:0;}
+  .uinfo b{display:block;font-size:19px;font-weight:900;}
+  .uinfo small{color:var(--soft);font-size:13px;font-weight:700;}
+  .uprog{display:flex;align-items:center;gap:8px;margin:12px 0 12px;}
+  .upbar{flex:1;height:11px;background:#eef2f3;border-radius:20px;overflow:hidden;}
+  .upbar i{display:block;height:100%;width:0;border-radius:20px;
+    background:linear-gradient(90deg,var(--g1),var(--g2));transition:width .7s ease;}
+  body.calm .upbar i{background:#6aa9a5;}
+  .uptext{font-size:12.5px;font-weight:800;color:var(--soft);white-space:nowrap;}
+  .uptext.done{color:var(--ok);}
+  .ubtns{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+  .ubtn{display:flex;align-items:center;justify-content:center;gap:5px;text-decoration:none;
+    border-radius:15px;padding:13px 8px;font-size:15.5px;font-weight:900;min-height:50px;
+    border:2px solid transparent;transition:transform .1s;}
+  .ubtn:active{transform:scale(.97);}
+  .ubtn.teach{background:linear-gradient(90deg,var(--g1),var(--g2));color:#fff;}
+  body.calm .ubtn.teach{background:#5b8f8c;}
+  .ubtn.quiz{background:#fff;color:var(--g3);border-color:#eac489;}
+  .ubtn.quiz:hover{background:#fff7ec;}
+
+  .foot{text-align:center;color:var(--soft);font-size:13px;margin-top:24px;line-height:1.9;}
+  .foot b{color:var(--g1);}
+
+  @media (prefers-reduced-motion: reduce){ *{animation:none !important;transition:none !important;} }
+</style>
+</head>
+<body>
+<div class="deco" id="deco">
+  <b class="a"></b><b class="b"></b><b class="c"></b>
+</div>
+
+<div class="wrap">
+  <div class="brand">
+    <span class="dot">江</span><b>江 JIANG ・ 跟林老師學數學</b>
+    <div class="ctrl">
+      <button id="btnCalm" data-act="calm">🌙 減敏模式</button>
+    </div>
+  </div>
+
+  <div class="hero">
+    <h1>四年級數學大探險</h1>
+    <p>全冊互動教學 ＋ 形成性評量 · 點一點就能自己學</p>
+    <span class="pill">🗺️ 全 10 單元 · 共 20 份教材</span>
+  </div>
+
+  <div class="panel">
+    <div class="guide">
+      <span class="star">⭐</span>
+      <div class="bub" id="guideBub">哈囉，我是林老師！這是我們的全冊地圖。
+        <small>每個單元有「互動教學」和「形成性評量」兩份，從第 1 單元開始，一關一關來。</small>
+      </div>
+    </div>
+    <div class="ring">
+      <div class="rp">
+        <svg viewBox="0 0 120 120">
+          <defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#0f9e99"/><stop offset="1" stop-color="#7b5fd0"/>
+          </linearGradient></defs>
+          <circle class="rt" cx="60" cy="60" r="50"/>
+          <circle class="rf" id="ringFill" cx="60" cy="60" r="50" stroke-dasharray="314" stroke-dashoffset="314"/>
+        </svg>
+        <b id="ringPct">0%</b>
+      </div>
+      <span class="rc">全冊完成度</span>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="foot">
+    進度會自動存在這台裝置上，下次打開接著玩。<br>
+    點任一單元的 <b>互動教學</b> 或 <b>形成性評量</b> 進入；分頁上方都有導覽列，可回到這張總目錄。
+  </div>
+</div>
+
+<script>
+"use strict";
+var UNITS=[
+ {n:1, icon:"🔢", title:"一億以內的數", sub:"位值・讀寫・比大小・加減", cls:"g1", key:"sped_math_yiyiyinei_v1", guan:4},
+ {n:2, icon:"✖️", title:"整數的乘法",   sub:"補0・拆解・大乘法",         cls:"g2", key:"sped_math_multiplication_v1", guan:3},
+ {n:3, icon:"📐", title:"角度",         sub:"量角器・角的種類・旋轉角・合成分解", cls:"g3", key:"sped_math_angle_v1", guan:4},
+ {n:4, icon:"➗", title:"整數的除法",   sub:"餘數・估商・大除法・驗算", cls:"g4", key:"sped_math_division_v1", guan:4},
+ {n:5, icon:"🛣️", title:"公里",         sub:"認識公里・單位換算・比長短・加減", cls:"g1", key:"sped_math_kilometer_v1", guan:4},
+ {n:6, icon:"🔺", title:"三角形",       sub:"認識・用邊分類・用角分類・全等", cls:"g2", key:"sped_math_triangle_v1", guan:4},
+ {n:7, icon:"📏", title:"小數",         sub:"認識二位小數・換算・比大小・加減", cls:"g3", key:"sped_math_decimal_v1", guan:4},
+ {n:8, icon:"🧮", title:"整數四則計算", sub:"加減・乘除・混合・四則", cls:"g4", key:"sped_math_fourops_v1", guan:4},
+ {n:9, icon:"🍕", title:"分數",         sub:"真假帶分數・互換・同分母加減・整數倍", cls:"g1", key:"sped_math_fraction_v1", guan:4},
+ {n:10,icon:"📊", title:"統計圖",       sub:"象形圖・長條圖・折線圖・複合圖", cls:"g2", key:"sped_math_charts_v1", guan:4}
+];
+function pad(n){ return (n<10?"0":"")+n; }
+function readProg(u){
+  try{
+    var s=localStorage.getItem(u.key); if(!s) return {done:0,total:u.guan*4,has:false};
+    var o=JSON.parse(s); var g=(o&&o.guan)||[]; var sum=0;
+    for(var i=0;i<g.length;i++) sum+=(+g[i]||0);
+    return {done:sum,total:u.guan*4,has:true};
+  }catch(e){ return {done:0,total:u.guan*4,has:false}; }
+}
+var grid=document.getElementById("grid"), html="", totDone=0, totAll=0;
+UNITS.forEach(function(u){
+  var p=readProg(u); totDone+=p.done; totAll+=p.total;
+  var pct=p.total?Math.round(p.done/p.total*100):0;
+  var label = pct>=100 ? "✅ 全部完成" : (pct>0 ? ("進度 "+pct+"%") : "尚未開始");
+  html+=''+
+   '<div class="ucard '+u.cls+'">'+
+     '<div class="utop">'+
+       '<span class="unum">'+u.n+'</span>'+
+       '<span class="uicon">'+u.icon+'</span>'+
+       '<div class="uinfo"><b>《'+u.title+'》</b><small>'+u.sub+'</small></div>'+
+     '</div>'+
+     '<div class="uprog"><div class="upbar"><i data-fill="'+pct+'"></i></div>'+
+       '<span class="uptext'+(pct>=100?" done":"")+'">'+label+'</span></div>'+
+     '<div class="ubtns">'+
+       '<a class="ubtn teach" href="unit'+pad(u.n)+'-teach.html">🎮 互動教學</a>'+
+       '<a class="ubtn quiz" href="unit'+pad(u.n)+'-quiz.html">📝 形成性評量</a>'+
+     '</div>'+
+   '</div>';
+});
+grid.innerHTML=html;
+// animate fills after paint
+requestAnimationFrame(function(){ setTimeout(function(){
+  [].forEach.call(document.querySelectorAll(".upbar i"),function(el){ el.style.width=el.getAttribute("data-fill")+"%"; });
+},60); });
+
+// overall ring
+var opct= totAll?Math.round(totDone/totAll*100):0;
+document.getElementById("ringPct").textContent=opct+"%";
+(function(){ var C=2*Math.PI*50, off=C*(1-opct/100);
+  var rf=document.getElementById("ringFill"); rf.setAttribute("stroke-dasharray",C.toFixed(1));
+  setTimeout(function(){ rf.setAttribute("stroke-dashoffset",off.toFixed(1)); },120);
+})();
+if(opct>=100){ document.getElementById("guideBub").innerHTML="全冊都完成了，太厲害了！🎉<small>可以隨時點任一單元回來複習。</small>"; }
+else if(opct>0){ document.getElementById("guideBub").innerHTML="做得很好，繼續加油！<small>接著點下一個還沒完成的單元吧。</small>"; }
+
+// floating stars deco
+(function(){ var d=document.getElementById("deco"); var em=["⭐","✨","🌟","💫","🔢","📐","🍕","📊"];
+  for(var i=0;i<7;i++){ var s=document.createElement("s"); s.textContent=em[i%em.length];
+    s.style.left=(6+Math.random()*88)+"%"; s.style.top=(8+Math.random()*82)+"%";
+    s.style.animationDelay=(Math.random()*5)+"s"; s.style.fontSize=(16+Math.random()*14)+"px"; d.appendChild(s); }
+})();
+
+// calm mode (persist)
+var CALMKEY="jiang_catalog_calm";
+try{ if(localStorage.getItem(CALMKEY)==="1"){ document.body.classList.add("calm"); document.getElementById("btnCalm").classList.add("on"); } }catch(e){}
+document.getElementById("btnCalm").addEventListener("click",function(){
+  var on=document.body.classList.toggle("calm"); this.classList.toggle("on",on);
+  try{ localStorage.setItem(CALMKEY,on?"1":"0"); }catch(e){}
+});
+</script>
+</body>
+</html>
